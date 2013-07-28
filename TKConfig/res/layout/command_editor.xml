@@ -29,9 +29,12 @@
         android:id="@+id/command_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top|left"
         android:hint="@string/command_description"
-        android:inputType="text"
-        android:singleLine="true" >
+        android:inputType="textMultiLine"
+        android:lines="4"
+        android:maxLines="10"
+        android:scrollbars="vertical" >
     </EditText>
 
     <RelativeLayout

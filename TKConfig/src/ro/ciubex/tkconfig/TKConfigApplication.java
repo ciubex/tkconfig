@@ -131,13 +131,13 @@ public class TKConfigApplication extends Application {
 		commands.add(new Command(
 				"GPRS: Set server address",
 				"adminip?password? ?server-ip? ?server-port?",
-				"Send SMS adminip+123456+space+IP address+space+port. If setup successful, the tracker will reply SMS \"adminip ok\"."));
+				"Send SMS adminip+password+space+IP address+space+port. If setup successful, the tracker will reply SMS \"adminip ok\"."));
 		commands.add(new Command("Cancel GPRS", "noadminip?password?",
-				"Send SMS noadminip+123456"));
+				"Send SMS noadminip+password"));
 		commands.add(new Command(
 				"Set APN",
 				"apn?password? ?apn-name?",
-				"Send SMS apn+123456+space+specify apn. If setup successful, the tracker will reply SMS \"APN ok\"."));
+				"Send SMS apn+password+space+specify apn. If setup successful, the tracker will reply SMS \"APN ok\"."));
 	}
 
 	/**

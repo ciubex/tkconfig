@@ -76,16 +76,23 @@
     <string name="about_text"><Data>
 <![CDATA[
         <b>Application version: %s</b><br/>
-        I created this application to easily send SMS commands to a TK 102 GPS tracker.<br/>
-        The command messages can contain parameters, each parameter should have on front and at the end the ? character.<br/>
-        e.g. ?password?<br/>
-        The user can define own parameters. Each parameter value will be saved into application preferences and will be available when it\'s needed.<br/>
-        When the message will be send to the GPS tracker those parameter will be replaced with your specified values.<br/>
+        I created this application to easily send SMS commands to a TK 102 GPS tracker or other tracking device which use the SMS messages for the configuration.<br/>
+		This application only send SMS messages to the GPS and do not interpret the GPS SMS response.<br/>
+		<br/>
+		The command messages can contain parameters, each parameter should have on front and at the end the ? character.<br/>
+		e.g. ?password?<br/>
+		<br/>
+		The user can define own parameters and commands, can be modified or deleted existing commands also. Each parameter value is saved into application preferences and are available when it\'s needed.<br/>
+		<br/>
+		When the message is sent to the GPS tracker the parameters are replaced with the specified values.<br/>
         <br/>
         Thank you for using this application!<br/>
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        <b>Version 1.2</b><br/>
+		- Modified the command description editor field to be more visible the text on dialog window.<br/>
+		<br/>
         <b>Version 1.1</b><br/>
 		- Fixed the loading process.<br/>
 		<br/>
