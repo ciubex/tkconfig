@@ -216,6 +216,9 @@ public class TKConfigApplication extends Application {
 	public void commandsLoad() {
 		int count = sharedPreferences.getInt("commands", 0);
 		int i = 0;
+		if (commands.size() > 0) {
+			commands.clear();
+		}
 		while (i < count) {
 			commands.add(new Command(sharedPreferences.getString("command_" + i
 					+ "_name", ""), sharedPreferences.getString("command_" + i

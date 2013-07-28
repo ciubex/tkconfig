@@ -67,10 +67,19 @@ public class TKConfigActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
 		setMenuId(R.menu.activity_config);
-		app.showProgressDialog(this, R.string.please_wait);
 		smsManager = SmsManager.getDefault();
-		app.commandsLoad();
 		prepareMainListView();
+	}
+	
+	/**
+	 * Method invoked when the activity is started.
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		app.showProgressDialog(this, R.string.please_wait);
+		app.commandsLoad();
+		reloadAdapter();
 	}
 
 	/**
@@ -102,7 +111,6 @@ public class TKConfigActivity extends BaseActivity {
 		});
 		adapter = new CommandListAdapter(app, app.getCommands());
 		commandsList.setAdapter(adapter);
-		reloadAdapter();
 	}
 
 	/**
