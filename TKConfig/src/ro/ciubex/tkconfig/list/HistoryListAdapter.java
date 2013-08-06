@@ -21,8 +21,9 @@ package ro.ciubex.tkconfig.list;
 import java.util.List;
 
 import ro.ciubex.tkconfig.R;
-import ro.ciubex.tkconfig.models.Command;
-
+import ro.ciubex.tkconfig.TKConfigApplication;
+import ro.ciubex.tkconfig.models.History;
+import ro.ciubex.tkconfig.models.Utilities;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,41 +32,45 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 /**
- * This is the list adapter used to populate the listView.
+ * This adapter is used to populate the history list view.
  * 
  * @author Claudiu Ciobotariu
  * 
  */
-public class CommandListAdapter extends BaseAdapter {
+public class HistoryListAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
-	private List<Command> commands;
+	private TKConfigApplication application;
+	private List<History> histories;
 
-	public CommandListAdapter(Context context, List<Command> commands) {
+	public HistoryListAdapter(Context context, TKConfigApplication application,
+			List<History> histories) {
 		mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.commands = commands;
+		this.application = application;
+		this.histories = histories;
 	}
 
 	/**
-	 * Get the number of commands in list.
+	 * Get the number of histories in list.
 	 * 
-	 * @return The number of commands.
+	 * @return The number of histories.
 	 */
 	@Override
 	public int getCount() {
-		return commands.size();
+		return histories.size();
 	}
 
 	/**
-	 * Get the command from the specified position.
+	 * Get the history event from the specified position.
 	 * 
 	 * @param position
 	 *            The position from the list.
-	 * @return The command at specified position.
+	 * @return The history event at specified position.
 	 */
 	@Override
 	public Object getItem(int position) {
-		return commands.get(position);
+		return position > -1 && position < histories.size() ? histories
+				.get(position) : null;
 	}
 
 	/**
@@ -92,35 +97,35 @@ public class CommandListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		CommandViewHolder viewHolder = null;
+		HistoryViewHolder viewHolder = null;
 		if (view != null) {
-			viewHolder = (CommandViewHolder) view.getTag();
+			viewHolder = (HistoryViewHolder) view.getTag();
 		} else {
-			view = mInflater.inflate(R.layout.list_item_layout, null);
-			viewHolder = new CommandViewHolder();
-			viewHolder.firstItemText = (TextView) view
-					.findViewById(R.id.firstItemText);
-			viewHolder.secondItemText = (TextView) view
-					.findViewById(R.id.secondItemText);
+			view = mInflater.inflate(R.layout.history_item_list_layout, null);
+			viewHolder = new HistoryViewHolder();
+			viewHolder.historyCommand = (TextView) view
+					.findViewById(R.id.history_command);
+			viewHolder.historyDateTime = (TextView) view
+					.findViewById(R.id.history_date_time);
 			view.setTag(viewHolder);
 		}
 		if (viewHolder != null) {
-			Command command = (Command) getItem(position);
-			if (command != null) {
-				viewHolder.firstItemText.setText(command.getName());
-				viewHolder.secondItemText.setText(command.getCommand());
+			History history = (History) getItem(position);
+			if (history != null) {
+				viewHolder.historyCommand.setText(history.getSmsCommand());
+				viewHolder.historyDateTime.setText(Utilities.formatDateTime(
+						application, history.getDateTime()));
 			}
 		}
 		return view;
 	}
 
 	/**
-	 * View holder for command item within the list.
+	 * View holder for history item within the list.
 	 * 
 	 */
-	static class CommandViewHolder {
-		TextView firstItemText;
-		TextView secondItemText;
+	static class HistoryViewHolder {
+		TextView historyCommand;
+		TextView historyDateTime;
 	}
-
 }

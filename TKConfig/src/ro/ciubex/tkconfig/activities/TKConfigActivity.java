@@ -26,13 +26,12 @@ import ro.ciubex.tkconfig.dialogs.EditorDialog;
 import ro.ciubex.tkconfig.dialogs.ParameterEditor;
 import ro.ciubex.tkconfig.list.CommandListAdapter;
 import ro.ciubex.tkconfig.models.Command;
+import ro.ciubex.tkconfig.models.History;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -47,7 +46,6 @@ import android.widget.ListView;
 public class TKConfigActivity extends BaseActivity {
 	private static Logger logger = Logger.getLogger(TKConfigActivity.class
 			.getName());
-	private SmsManager smsManager;
 	private CommandListAdapter adapter;
 	private ListView commandsList;
 
@@ -67,10 +65,9 @@ public class TKConfigActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
 		setMenuId(R.menu.activity_config);
-		smsManager = SmsManager.getDefault();
 		prepareMainListView();
 	}
-	
+
 	/**
 	 * Method invoked when the activity is started.
 	 */
@@ -114,7 +111,7 @@ public class TKConfigActivity extends BaseActivity {
 	}
 
 	/**
-	 * Reload adapter and properties list based on the provided properties.
+	 * Reload adapter and commands list.
 	 */
 	public void reloadAdapter() {
 		adapter.notifyDataSetChanged();
@@ -126,7 +123,7 @@ public class TKConfigActivity extends BaseActivity {
 
 	/**
 	 * This method show the pop up menu when the user do a long click on a list
-	 * item
+	 * item.
 	 * 
 	 * @param contactPosition
 	 *            The contact position where was made the long click
@@ -334,12 +331,13 @@ public class TKConfigActivity extends BaseActivity {
 	 *            The command to be send.
 	 */
 	private void doSendSMS(Command command) {
+		String phoneNo = app.getGPSPhoneNumber();
 		String cmd = command.getSMSCommand();
+		app.addHistory(new History(phoneNo, cmd));
+		app.historiesSave();
 		logger.log(Level.INFO, "Send SMS:" + cmd);
-		PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(this,
-				TKConfigActivity.class), 0);
-		smsManager
-				.sendTextMessage(app.getGPSPhoneNumber(), null, cmd, pi, null);
+		app.sendSMS(this, TKConfigActivity.class, phoneNo, cmd);
+		
 	}
 
 	/**
@@ -357,6 +355,9 @@ public class TKConfigActivity extends BaseActivity {
 			break;
 		case R.id.menu_donate:
 			processed = onMenuDonate();
+			break;
+		case R.id.menu_history:
+			processed = onMenuHistory();
 			break;
 		case R.id.menu_about:
 			processed = onMenuAbout();
@@ -427,5 +428,16 @@ public class TKConfigActivity extends BaseActivity {
 				app.setMustReloadCommands(false);
 			}
 		}
+	}
+
+	/**
+	 * Launch History Activity
+	 * 
+	 * @return True, because is processed by this activity.
+	 */
+	private boolean onMenuHistory() {
+		Intent intent = new Intent(getBaseContext(), HistoryActivity.class);
+		startActivityForResult(intent, 1);
+		return true;
 	}
 }

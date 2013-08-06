@@ -23,11 +23,15 @@ import java.util.List;
 import java.util.Locale;
 
 import ro.ciubex.tkconfig.models.Command;
+import ro.ciubex.tkconfig.models.History;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.telephony.SmsManager;
 
 /**
  * This is main application class. Here are defined the progress dialog and
@@ -39,9 +43,11 @@ import android.preference.PreferenceManager;
 public class TKConfigApplication extends Application {
 	private ProgressDialog progressDialog;
 	private List<Command> commands;
+	private List<History> histories;
 	private Locale defaultLocale;
 	private SharedPreferences sharedPreferences;
 	private boolean mustReloadCommands;
+	private SmsManager smsManager;
 
 	/**
 	 * This method is invoked when the application is created.
@@ -52,8 +58,10 @@ public class TKConfigApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		commands = new ArrayList<Command>();
+		histories = new ArrayList<History>();
 		defaultLocale = Locale.getDefault();
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		smsManager = SmsManager.getDefault();
 	}
 
 	/**
@@ -192,6 +200,7 @@ public class TKConfigApplication extends Application {
 	public void onClose() {
 		hideProgressDialog();
 		commandsSave();
+		historiesSave();
 	}
 
 	/**
@@ -306,5 +315,79 @@ public class TKConfigApplication extends Application {
 			progressDialog.dismiss();
 		}
 		progressDialog = null;
+	}
+
+	/**
+	 * Add an history event to the histories list.
+	 * 
+	 * @param history
+	 *            The history event to be added.
+	 * @return Always will be returned true.
+	 */
+	public boolean addHistory(History history) {
+		return histories.add(history);
+	}
+
+	/**
+	 * Obtain the histories list.
+	 * 
+	 * @return The histories list.
+	 */
+	public List<History> getHistories() {
+		return histories;
+	}
+
+	/**
+	 * Method used to save the histories to the application preferences.
+	 */
+	public void historiesSave() {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("histories", histories.size());
+		int i = 0;
+		for (History history : histories) {
+			editor.putLong("history_" + i + "_dateTime", history.getDateTime());
+			editor.putString("history_" + i + "_cmd", history.getSmsCommand());
+			editor.putString("history_" + i + "_number",
+					history.getPhoneNumber());
+			i++;
+		}
+		editor.commit();
+	}
+
+	/**
+	 * Method used to load the histories from the application preferences.
+	 */
+	public void historiesLoad() {
+		int count = sharedPreferences.getInt("histories", 0);
+		int i = 0;
+		if (histories.size() > 0) {
+			histories.clear();
+		}
+		while (i < count) {
+			histories.add(new History(sharedPreferences.getLong("history_" + i
+					+ "_dateTime", 0L), sharedPreferences.getString("history_"
+					+ i + "_number", ""), sharedPreferences.getString(
+					"history_" + i + "_cmd", "")));
+			i++;
+		}
+	}
+
+	/**
+	 * Method used to send a SMS message to provided phone number.
+	 * 
+	 * @param context
+	 *            The context used to send the SMS.
+	 * @param clazz
+	 *            The sender class.
+	 * @param phoneNo
+	 *            The phone number.
+	 * @param message
+	 *            The message to be send.
+	 */
+	public void sendSMS(Context context, Class<?> clazz, String phoneNo,
+			String message) {
+		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
+				context, clazz), 0);
+		smsManager.sendTextMessage(phoneNo, null, message, pi, null);
 	}
 }

@@ -18,7 +18,13 @@
  */
 package ro.ciubex.tkconfig.models;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.regex.Pattern;
+
+import ro.ciubex.tkconfig.R;
+import ro.ciubex.tkconfig.TKConfigApplication;
 
 /**
  * Here should be defined utilities methods.
@@ -47,5 +53,41 @@ public class Utilities {
 					parameterName.length() - 1);
 		}
 		return parameterName;
+	}
+
+	/**
+	 * Format the date time information into a human readable format.
+	 * 
+	 * @param dateTime
+	 *            The date time information in milliseconds.
+	 * @return The formated date time.
+	 */
+	public static String formatDateTime(TKConfigApplication application,
+			long dateTime) {
+		Calendar today = Calendar.getInstance();
+		Calendar yesterday = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(dateTime);
+		yesterday.add(Calendar.DATE, -1);
+		DateFormat dateFormatter = new SimpleDateFormat(
+				application.getString(R.string.date_format),
+				application.getDefaultLocale());
+		DateFormat timeFormatter = new SimpleDateFormat(
+				application.getString(R.string.time_format),
+				application.getDefaultLocale());
+		String date = "";
+		
+		if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+				&& calendar.get(Calendar.DAY_OF_YEAR) == today
+						.get(Calendar.DAY_OF_YEAR)) {
+			date = application.getString(R.string.today);
+		} else if (calendar.get(Calendar.YEAR) == yesterday.get(Calendar.YEAR)
+				&& calendar.get(Calendar.DAY_OF_YEAR) == yesterday
+						.get(Calendar.DAY_OF_YEAR)) {
+			date = application.getString(R.string.yesterday);
+		} else {
+			date = dateFormatter.format(calendar.getTime());
+		}
+		return date + " " + timeFormatter.format(calendar.getTime());
 	}
 }
