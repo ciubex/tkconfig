@@ -26,7 +26,6 @@ import ro.ciubex.tkconfig.dialogs.EditorDialog;
 import ro.ciubex.tkconfig.dialogs.ParameterEditor;
 import ro.ciubex.tkconfig.list.CommandListAdapter;
 import ro.ciubex.tkconfig.models.Command;
-import ro.ciubex.tkconfig.models.History;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -333,11 +332,8 @@ public class TKConfigActivity extends BaseActivity {
 	private void doSendSMS(Command command) {
 		String phoneNo = app.getGPSPhoneNumber();
 		String cmd = command.getSMSCommand();
-		app.addHistory(new History(phoneNo, cmd));
-		app.historiesSave();
 		logger.log(Level.INFO, "Send SMS:" + cmd);
 		app.sendSMS(this, TKConfigActivity.class, phoneNo, cmd);
-		
 	}
 
 	/**

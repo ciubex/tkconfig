@@ -386,6 +386,8 @@ public class TKConfigApplication extends Application {
 	 */
 	public void sendSMS(Context context, Class<?> clazz, String phoneNo,
 			String message) {
+		addHistory(new History(phoneNo, message));
+		historiesSave();
 		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
 				context, clazz), 0);
 		smsManager.sendTextMessage(phoneNo, null, message, pi, null);

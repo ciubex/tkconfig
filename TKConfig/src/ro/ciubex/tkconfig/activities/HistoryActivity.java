@@ -37,7 +37,8 @@ public class HistoryActivity extends BaseActivity {
 	private HistoryListAdapter adapter;
 	private ListView historiesList;
 
-	private final int CONFIRM_ID_DELETE = 0;
+	private final int CONFIRM_ID_RESEND = 0;
+	private final int CONFIRM_ID_DELETE = 1;
 
 	/**
 	 * The method invoked when the activity is creating
@@ -124,6 +125,9 @@ public class HistoryActivity extends BaseActivity {
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 						case 0:
+							onMenuItemResendSMS(position);
+							break;
+						case 1:
 							onMenuItemDelete(position);
 							break;
 						}
@@ -133,10 +137,10 @@ public class HistoryActivity extends BaseActivity {
 	}
 
 	/**
-	 * This method is invoked when the user chose to delete a command.
+	 * This method is invoked when the user chose to delete an history item.
 	 * 
 	 * @param position
-	 *            The position of command to be deleted.
+	 *            The position of history item to be deleted.
 	 */
 	private void onMenuItemDelete(int position) {
 		final History history = (History) adapter.getItem(position);
@@ -145,6 +149,22 @@ public class HistoryActivity extends BaseActivity {
 					R.string.remove_history,
 					app.getString(R.string.remove_history_question,
 							history.getSmsCommand()), CONFIRM_ID_DELETE,
+					history);
+		}
+	}
+
+	/**
+	 * This method is invoked when the user chose to resend an history item.
+	 * 
+	 * @param position The position of history item to be resend.
+	 */
+	private void onMenuItemResendSMS(int position) {
+		final History history = (History) adapter.getItem(position);
+		if (history != null) {
+			showConfirmationDialog(
+					R.string.resend_command,
+					app.getString(R.string.resend_command_question,
+							history.getSmsCommand()), CONFIRM_ID_RESEND,
 					history);
 		}
 	}
@@ -165,6 +185,9 @@ public class HistoryActivity extends BaseActivity {
 			Object anObject) {
 		if (positive) {
 			switch (confirmationId) {
+			case CONFIRM_ID_RESEND:
+				doResendSMS((History) anObject);
+				break;
 			case CONFIRM_ID_DELETE:
 				doDeleteHistory((History) anObject);
 				break;
@@ -181,6 +204,17 @@ public class HistoryActivity extends BaseActivity {
 	private void doDeleteHistory(History history) {
 		app.showProgressDialog(this, R.string.please_wait);
 		app.getHistories().remove(history);
+		reloadAdapter();
+	}
+
+	/**
+	 * Resend a SMS command from the history.
+	 * @param history
+	 *            History with the command to be resend.
+	 */
+	private void doResendSMS(History history) {
+		app.showProgressDialog(this, R.string.please_wait);
+		app.sendSMS(this, HistoryActivity.class, app.getGPSPhoneNumber(), history.getSmsCommand());
 		reloadAdapter();
 	}
 }

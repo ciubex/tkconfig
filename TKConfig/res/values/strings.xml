@@ -15,6 +15,8 @@
     <string name="yesterday">Yesterday</string>
     <string name="date_format">MM.dd.yyyy</string>
     <string name="time_format">hh:mm:ss</string>
+    <string name="information">Information:</string>
+    <string name="error_occurred">An error occurred:</string>
 
     <!-- Menu labels -->
     <string name="menu_settings">Settings</string>
@@ -36,6 +38,7 @@
     </string-array>
     
     <string-array name="history_menu_list">
+        <item>Resend SMS</item>
         <item>Delete</item>
     </string-array>
 
@@ -66,6 +69,8 @@
     <string name="sms_command">SMS command</string>
     <string name="remove_history">Remove command</string>
     <string name="remove_history_question">Do you want to remove the command:\n\"%s\"\nfrom the history list?</string>
+    <string name="resend_command">Resend command</string>
+    <string name="resend_command_question">Do you want to resend the command:\n\"%s\"?</string>
 
     <!-- Preferences -->
     <string name="settings">Settings</string>
@@ -108,6 +113,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        <b>Version 1.4</b><br/>
+		- Added support to send SMS commands from history.<br/>
+		<br/>
         <b>Version 1.3</b><br/>
 		- Added the history support to store the sended messages.<br/>
 		<br/>

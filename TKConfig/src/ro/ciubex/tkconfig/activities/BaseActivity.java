@@ -38,7 +38,6 @@ public class BaseActivity extends Activity {
 	protected TKConfigApplication app;
 	protected int menuId;
 	private boolean showMenu;
-
 	/**
 	 * The method invoked when the activity is creating
 	 */
@@ -152,6 +151,39 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
+	 * Invoked when an item from option menu is selected Send the menu ID to be
+	 * processed.
+	 * 
+	 * @param item
+	 *            The selected menu item
+	 * @return A boolean value. True if the item is processed by this activity
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return onMenuItemSelected(item.getItemId());
+	}
+
+	/**
+	 * A default menu option consumer
+	 * 
+	 * @param menuItemId
+	 *            The menu item ID to be processed
+	 * @return A boolean value. True if the item is processed by this activity
+	 */
+	protected boolean onMenuItemSelected(int menuItemId) {
+		return false;
+	}
+	/**
+	 * Method invoked when the used click on the OK dialog message.
+	 * 
+	 * @param messageId
+	 *            The ID of the message to be identified on the caller activity.
+	 * @param anObject
+	 *            The object used by the caller activity.
+	 */
+	protected void onMessageOk(int messageId, Object anObject) {
+	}
+	/**
 	 * This method should be used to show a dialog message to the user.
 	 * 
 	 * @param titleStringId
@@ -178,40 +210,5 @@ public class BaseActivity extends Activity {
 					}
 				});
 		alert.show();
-	}
-
-	/**
-	 * Method invoked when the used click on the OK dialog message.
-	 * 
-	 * @param messageId
-	 *            The ID of the message to be identified on the caller activity.
-	 * @param anObject
-	 *            The object used by the caller activity.
-	 */
-	protected void onMessageOk(int messageId, Object anObject) {
-	}
-
-	/**
-	 * Invoked when an item from option menu is selected Send the menu ID to be
-	 * processed.
-	 * 
-	 * @param item
-	 *            The selected menu item
-	 * @return A boolean value. True if the item is processed by this activity
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return onMenuItemSelected(item.getItemId());
-	}
-
-	/**
-	 * A default menu option consumer
-	 * 
-	 * @param menuItemId
-	 *            The menu item ID to be processed
-	 * @return A boolean value. True if the item is processed by this activity
-	 */
-	protected boolean onMenuItemSelected(int menuItemId) {
-		return false;
 	}
 }
