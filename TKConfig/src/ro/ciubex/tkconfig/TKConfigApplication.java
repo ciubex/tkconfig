@@ -21,6 +21,8 @@ package ro.ciubex.tkconfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.History;
@@ -41,6 +43,8 @@ import android.telephony.SmsManager;
  * 
  */
 public class TKConfigApplication extends Application {
+	private static Logger logger = Logger.getLogger(TKConfigApplication.class
+			.getName());
 	private ProgressDialog progressDialog;
 	private List<Command> commands;
 	private List<History> histories;
@@ -57,6 +61,7 @@ public class TKConfigApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		logger.log(Level.INFO, "TKConfigApplication started!");
 		commands = new ArrayList<Command>();
 		histories = new ArrayList<History>();
 		defaultLocale = Locale.getDefault();
@@ -199,14 +204,12 @@ public class TKConfigApplication extends Application {
 	 */
 	public void onClose() {
 		hideProgressDialog();
-		commandsSave();
-		historiesSave();
 	}
 
 	/**
 	 * Method used to save the commands to the application preferences.
 	 */
-	private void commandsSave() {
+	public void commandsSave() {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putInt("commands", commands.size());
 		int i = 0;

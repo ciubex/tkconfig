@@ -156,7 +156,8 @@ public class HistoryActivity extends BaseActivity {
 	/**
 	 * This method is invoked when the user chose to resend an history item.
 	 * 
-	 * @param position The position of history item to be resend.
+	 * @param position
+	 *            The position of history item to be resend.
 	 */
 	private void onMenuItemResendSMS(int position) {
 		final History history = (History) adapter.getItem(position);
@@ -204,17 +205,20 @@ public class HistoryActivity extends BaseActivity {
 	private void doDeleteHistory(History history) {
 		app.showProgressDialog(this, R.string.please_wait);
 		app.getHistories().remove(history);
+		app.historiesSave();
 		reloadAdapter();
 	}
 
 	/**
 	 * Resend a SMS command from the history.
+	 * 
 	 * @param history
 	 *            History with the command to be resend.
 	 */
 	private void doResendSMS(History history) {
 		app.showProgressDialog(this, R.string.please_wait);
-		app.sendSMS(this, HistoryActivity.class, app.getGPSPhoneNumber(), history.getSmsCommand());
+		app.sendSMS(this, HistoryActivity.class, app.getGPSPhoneNumber(),
+				history.getSmsCommand());
 		reloadAdapter();
 	}
 }

@@ -38,6 +38,7 @@ public class BaseActivity extends Activity {
 	protected TKConfigApplication app;
 	protected int menuId;
 	private boolean showMenu;
+
 	/**
 	 * The method invoked when the activity is creating
 	 */
@@ -86,7 +87,7 @@ public class BaseActivity extends Activity {
 	protected void goBack() {
 		finish();
 	}
-	
+
 	/**
 	 * Invoked when the activity is put on pause
 	 */
@@ -173,6 +174,7 @@ public class BaseActivity extends Activity {
 	protected boolean onMenuItemSelected(int menuItemId) {
 		return false;
 	}
+
 	/**
 	 * Method invoked when the used click on the OK dialog message.
 	 * 
@@ -183,6 +185,7 @@ public class BaseActivity extends Activity {
 	 */
 	protected void onMessageOk(int messageId, Object anObject) {
 	}
+
 	/**
 	 * This method should be used to show a dialog message to the user.
 	 * 

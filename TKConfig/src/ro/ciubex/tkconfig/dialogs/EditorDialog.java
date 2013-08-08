@@ -84,19 +84,22 @@ public class EditorDialog extends BaseDialog {
 		String cName = cmdName.getText().toString();
 		String cCommand = cmdCommand.getText().toString();
 		String cDescription = cmdDescription.getText().toString();
-		if (cCommand!=null && cName!=null && cCommand.length() > 0 && cName.length() > 0) {
+		if (cCommand != null && cName != null && cCommand.length() > 0
+				&& cName.length() > 0) {
 			if (cDescription == null) {
 				cDescription = "";
 			}
-			((TKConfigApplication)application).showProgressDialog(parentActivity, R.string.please_wait);
+			((TKConfigApplication) application).showProgressDialog(
+					parentActivity, R.string.please_wait);
 			if (command == null) {
 				command = new Command(cName, cCommand, cDescription);
-				((TKConfigApplication)application).getCommands().add(command);
+				((TKConfigApplication) application).getCommands().add(command);
 			} else {
 				command.setName(cName);
 				command.setCommand(cCommand);
 				command.setDescription(cDescription);
 			}
+			((TKConfigApplication) application).commandsSave();
 			((TKConfigActivity) parentActivity).reloadAdapter();
 		}
 	}

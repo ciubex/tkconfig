@@ -113,6 +113,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        <b>Version 1.5</b><br/>
+		- Fixed the save and load history list processes.<br/>
+		<br/>
         <b>Version 1.4</b><br/>
 		- Added support to send SMS commands from history.<br/>
 		<br/>

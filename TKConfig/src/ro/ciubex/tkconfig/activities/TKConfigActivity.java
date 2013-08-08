@@ -231,6 +231,7 @@ public class TKConfigActivity extends BaseActivity {
 	private void doDeleteCommand(Command command) {
 		app.showProgressDialog(this, R.string.please_wait);
 		app.getCommands().remove(command);
+		app.commandsSave();
 		reloadAdapter();
 	}
 
