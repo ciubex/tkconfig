@@ -26,7 +26,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 /**
@@ -68,16 +68,12 @@ public class HistoryActivity extends BaseActivity {
 	private void prepareHistoryListView() {
 		historiesList = (ListView) findViewById(R.id.history_list);
 		historiesList.setEmptyView(findViewById(R.id.no_history));
-		historiesList.setOnItemLongClickListener(new OnItemLongClickListener() {
+		historiesList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				boolean isProcessed = false;
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (position > -1 && position < adapter.getCount()) {
-					isProcessed = true;
 					showItemDialogMenu(position);
 				}
-				return isProcessed;
 			}
 		});
 		adapter = new HistoryListAdapter(app, app, app.getHistories());

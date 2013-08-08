@@ -33,7 +33,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 /**
@@ -93,16 +93,13 @@ public class TKConfigActivity extends BaseActivity {
 	private void prepareMainListView() {
 		commandsList = (ListView) findViewById(R.id.command_list);
 		commandsList.setEmptyView(findViewById(R.id.empty_list_view));
-		commandsList.setOnItemLongClickListener(new OnItemLongClickListener() {
+		commandsList.setOnItemClickListener(new OnItemClickListener() {
+
 			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				boolean isProcessed = false;
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (position > -1 && position < adapter.getCount()) {
-					isProcessed = true;
 					showItemDialogMenu(position);
 				}
-				return isProcessed;
 			}
 		});
 		adapter = new CommandListAdapter(app, app.getCommands());
