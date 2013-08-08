@@ -14,7 +14,7 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="date_format">MM.dd.yyyy</string>
-    <string name="time_format">hh:mm:ss</string>
+    <string name="time_format">HH:mm:ss</string>
     <string name="information">Information:</string>
     <string name="error_occurred">An error occurred:</string>
 
@@ -113,6 +113,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        <b>Version 1.6.1</b><br/>
+		- Fixed the history hour time to show in 24h format.<br/>
+		<br/>
         <b>Version 1.6</b><br/>
 		- Replaced the long click with simple click to access the context menu.<br/>
 		<br/>
