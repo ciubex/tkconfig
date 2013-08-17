@@ -53,7 +53,11 @@ public class ParameterEditor extends BaseDialog {
 		editParameter = (EditText) findViewById(R.id.edit_parameter);
 		listEditText.add(editParameter);
 		if (command != null) {
-			editParameter.setText(command.getParameterValue(parameterName));
+			String temp = command.getParameterValue(parameterName);
+			editParameter.setHint(parameterName);
+			if (temp != null) {
+				editParameter.setText(temp);
+			}
 		}
 		super.initEditTextFields();
 	}

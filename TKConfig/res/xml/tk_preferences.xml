@@ -4,16 +4,11 @@
     android:title="@string/settings_title" >
 
     <PreferenceCategory android:title="@string/general_settings" >
-        <EditTextPreference
-            android:defaultValue="@string/gps_phone_number_default"
-            android:key="gpsPhoneNumber"
-            android:summary="@string/gps_phone_number_details"
-            android:title="@string/gps_phone_number" />
-        <EditTextPreference
-            android:defaultValue="@string/gps_password_default"
-            android:key="password"
-            android:summary="@string/gps_password_details"
-            android:title="@string/gps_password" />
+        <Preference
+            android:key="gpsContacts"
+            android:persistent="false"
+            android:summary="@string/gps_contacts_desc"
+            android:title="@string/gps_contacts" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other_settings" >
         <Preference

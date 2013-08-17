@@ -25,6 +25,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ro.ciubex.tkconfig.models.Command;
+import ro.ciubex.tkconfig.models.Constants;
+import ro.ciubex.tkconfig.models.GpsContact;
 import ro.ciubex.tkconfig.models.History;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -48,6 +50,7 @@ public class TKConfigApplication extends Application {
 	private ProgressDialog progressDialog;
 	private List<Command> commands;
 	private List<History> histories;
+	private List<GpsContact> contacts;
 	private Locale defaultLocale;
 	private SharedPreferences sharedPreferences;
 	private boolean mustReloadCommands;
@@ -64,9 +67,11 @@ public class TKConfigApplication extends Application {
 		logger.log(Level.INFO, "TKConfigApplication started!");
 		commands = new ArrayList<Command>();
 		histories = new ArrayList<History>();
+		contacts = new ArrayList<GpsContact>();
 		defaultLocale = Locale.getDefault();
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		smsManager = SmsManager.getDefault();
+		contactsLoad();
 	}
 
 	/**
@@ -164,9 +169,12 @@ public class TKConfigApplication extends Application {
 		if (command.hasParameters()) {
 			String parameterValue;
 			for (String parameterName : command.getParameters()) {
-				parameterValue = sharedPreferences.getString(parameterName,
-						parameterName);
-				command.setParameterValue(parameterName, parameterValue);
+				// skip if is the password
+				if (!Constants.PASSWORD.equals(parameterName)) {
+					parameterValue = sharedPreferences.getString(parameterName,
+							parameterName);
+					command.setParameterValue(parameterName, parameterValue);
+				}
 			}
 		}
 	}
@@ -176,8 +184,8 @@ public class TKConfigApplication extends Application {
 	 * 
 	 * @return The GPS tracker phone number.
 	 */
-	public String getGPSPhoneNumber() {
-		return sharedPreferences.getString("gpsPhoneNumber", "0123456789");
+	private String getGPSPhoneNumber() {
+		return sharedPreferences.getString("gpsPhoneNumber", "");
 	}
 
 	/**
@@ -192,8 +200,13 @@ public class TKConfigApplication extends Application {
 			String parameterValue;
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			for (String parameterName : command.getParameters()) {
-				parameterValue = command.getParameterValue(parameterName);
-				editor.putString(parameterName, parameterValue);
+				// skip if is the password
+				if (!Constants.PASSWORD.equals(parameterName)) {
+					parameterValue = command.getParameterValue(parameterName);
+					if (parameterValue != null) {
+						editor.putString(parameterName, parameterValue);
+					}
+				}
 			}
 			editor.commit();
 		}
@@ -391,8 +404,128 @@ public class TKConfigApplication extends Application {
 			String message) {
 		addHistory(new History(phoneNo, message));
 		historiesSave();
+		logger.log(Level.INFO, "Send to: " + phoneNo + " the SMS:\"" + message
+				+ "\"");
 		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
 				context, clazz), 0);
 		smsManager.sendTextMessage(phoneNo, null, message, pi, null);
 	}
+
+	/**
+	 * Method used to send a SMS message to all selected GPS contacts.
+	 * 
+	 * @param context
+	 *            The context used to send the SMS.
+	 * @param clazz
+	 *            The sender class.
+	 * @param message
+	 *            The message to be send.
+	 */
+	public void sendSMS(Context context, Class<?> clazz, String message) {
+		for (GpsContact contact : contacts) {
+			String cmd = prepareCommandPassword(message, contact);
+			if (contact.isSelected()) {
+				sendSMS(context, clazz, contact.getPhone(), cmd);
+			}
+		}
+	}
+
+	/**
+	 * Prepare the specific GPS password for the provided contact used on the
+	 * message.
+	 * 
+	 * @param message
+	 *            The original message.
+	 * @param contact
+	 *            The contact used to obtain the GPS password.
+	 * @return The prepared message which include the GPS password.
+	 */
+	private String prepareCommandPassword(String message, GpsContact contact) {
+		String result = message.replaceAll("\\?password\\?",
+				contact.getPassword());
+		return result;
+	}
+
+	/**
+	 * Check if are selected GPS contacts into the list.
+	 * 
+	 * @return True if is at least one selected GPS contact in the list.
+	 */
+	public boolean haveContactsSelected() {
+		boolean result = false;
+		for (GpsContact contact : contacts) {
+			if (contact.isSelected()) {
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Add a GPS contact to the list of contacts.
+	 * 
+	 * @param contact
+	 *            The contact to be added to the list.
+	 */
+	public void addGpsContact(GpsContact contact) {
+		contacts.add(contact);
+	}
+
+	/**
+	 * Obtain the whole GPS contact list.
+	 * 
+	 * @return The GPS contact list.
+	 */
+	public List<GpsContact> getContacts() {
+		return contacts;
+	}
+
+	/**
+	 * Load the list of GPS contacts.
+	 */
+	private void contactsLoad() {
+		int count = sharedPreferences.getInt("contacts", 0);
+		int i = 0;
+		if (contacts.size() > 0) {
+			contacts.clear();
+		}
+		while (i < count) {
+			contacts.add(new GpsContact(sharedPreferences.getString("contact_"
+					+ i + "_name", ""), sharedPreferences.getString("contact_"
+					+ i + "_phone", ""), sharedPreferences.getString("contact_"
+					+ i + "_password", ""), sharedPreferences.getBoolean(
+					"contact_" + i + "_selected", false)));
+			i++;
+		}
+		if (contacts.size() < 1) {
+			String temp = getGPSPhoneNumber();
+			String pass = sharedPreferences.getString("password", "123456");
+			if (temp.length() > 0) {
+				contacts.add(new GpsContact(temp, temp, pass, true));
+			}
+		}
+	}
+
+	/**
+	 * Save the GPS contacts list
+	 */
+	public void contactsSave() {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putInt("contacts", contacts.size());
+		int i = 0;
+		for (GpsContact contact : contacts) {
+			editor.putString("contact_" + i + "_name", contact.getName());
+			editor.putString("contact_" + i + "_phone", contact.getPhone());
+			editor.putString("contact_" + i + "_password",
+					contact.getPassword());
+			editor.putBoolean("contact_" + i + "_selected",
+					contact.isSelected());
+			i++;
+		}
+		editor.remove("gpsPhoneNumber");
+		editor.remove("password");
+		editor.commit();
+	}
+
 }

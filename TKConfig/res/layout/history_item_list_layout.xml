@@ -3,23 +3,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <TextView
         android:id="@+id/history_command"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
-        android:text="@string/loading_wait"
         android:maxLines="1"
+        android:text="@string/loading_wait"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/history_date_time"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:gravity="right"
-        android:text="@string/date_time"
-        android:maxLines="1"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/history_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:focusable="false"
+            android:maxLines="1"
+            android:text="@string/phone_number"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/history_date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:focusable="false"
+            android:maxLines="1"
+            android:text="@string/date_time"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </RelativeLayout>
+
 </LinearLayout>

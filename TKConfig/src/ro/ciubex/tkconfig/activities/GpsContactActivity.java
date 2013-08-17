@@ -19,8 +19,9 @@
 package ro.ciubex.tkconfig.activities;
 
 import ro.ciubex.tkconfig.R;
-import ro.ciubex.tkconfig.list.HistoryListAdapter;
-import ro.ciubex.tkconfig.models.History;
+import ro.ciubex.tkconfig.dialogs.GpsContactEditor;
+import ro.ciubex.tkconfig.list.GpsContactListAdapter;
+import ro.ciubex.tkconfig.models.GpsContact;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -30,15 +31,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 /**
+ * This activity show to the user a list of available GPS phones.
+ * 
  * @author Claudiu Ciobotariu
  * 
  */
-public class HistoryActivity extends BaseActivity {
-	private HistoryListAdapter adapter;
-	private ListView historiesList;
-
-	private final int CONFIRM_ID_RESEND = 0;
-	private final int CONFIRM_ID_DELETE = 1;
+public class GpsContactActivity extends BaseActivity {
+	private GpsContactListAdapter adapter;
+	private ListView contactList;
+	private final int CONFIRM_ID_DELETE = 0;
 
 	/**
 	 * The method invoked when the activity is creating
@@ -46,9 +47,9 @@ public class HistoryActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.history_list_layout);
-		setMenuId(R.menu.history_menu);
-		prepareHistoryListView();
+		setContentView(R.layout.gps_contact_list_layout);
+		setMenuId(R.menu.gps_contact_menu);
+		prepareGpsContactListView();
 	}
 
 	/**
@@ -61,14 +62,27 @@ public class HistoryActivity extends BaseActivity {
 		app.historiesLoad();
 		reloadAdapter();
 	}
+	
+	/**
+	 * Invoked when the activity is put on pause
+	 */
+	@Override
+	protected void onPause() {
+		if (adapter.isModified()) {
+			app.contactsSave();
+			adapter.setModified(false);
+		}
+		super.onPause();
+	}
 
 	/**
 	 * Method used to initialize the history list view.
 	 */
-	private void prepareHistoryListView() {
-		historiesList = (ListView) findViewById(R.id.history_list);
-		historiesList.setEmptyView(findViewById(R.id.no_history));
-		historiesList.setOnItemClickListener(new OnItemClickListener() {
+	private void prepareGpsContactListView() {
+		contactList = (ListView) findViewById(R.id.gps_contact_list);
+		contactList.setEmptyView(findViewById(R.id.no_contacts));
+		contactList.setItemsCanFocus(false);
+		contactList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -77,8 +91,8 @@ public class HistoryActivity extends BaseActivity {
 				}
 			}
 		});
-		adapter = new HistoryListAdapter(app);
-		historiesList.setAdapter(adapter);
+		adapter = new GpsContactListAdapter(app);
+		contactList.setAdapter(adapter);
 	}
 
 	/**
@@ -86,10 +100,39 @@ public class HistoryActivity extends BaseActivity {
 	 */
 	public void reloadAdapter() {
 		adapter.notifyDataSetChanged();
-		historiesList.invalidateViews();
-		historiesList.scrollBy(0, 0);
-		historiesList.setFastScrollEnabled(app.getHistories().size() > 50);
+		contactList.invalidateViews();
+		contactList.scrollBy(0, 0);
+		contactList.setFastScrollEnabled(app.getContacts().size() > 50);
 		app.hideProgressDialog();
+	}
+
+	/**
+	 * This method show the pop up menu when the user do a long click on a list
+	 * item.
+	 * 
+	 * @param contactPosition
+	 *            The contact position where was made the long click
+	 */
+	private void showItemDialogMenu(final int position) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.item_edit);
+		builder.setItems(R.array.contacts_menu_list,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+						case 0:
+							onMenuItemEdit(position);
+							break;
+						case 1:
+							onMenuItemAdd();
+							break;
+						case 2:
+							onMenuItemDelete(position);
+							break;
+						}
+					}
+				});
+		builder.create().show();
 	}
 
 	/**
@@ -103,67 +146,46 @@ public class HistoryActivity extends BaseActivity {
 			processed = true;
 			goBack();
 			break;
+		case R.id.menu_add:
+			processed = true;
+			onMenuItemAdd();
+			break;
 		}
 		return processed;
 	}
 
 	/**
-	 * This method show the pop up menu when the user do a long click on a list
-	 * item.
+	 * This method is invoked when the user chose to edit a contact item.
 	 * 
-	 * @param contactPosition
-	 *            The contact position where was made the long click
+	 * @param position
+	 *            The position of contact item to be edited.
 	 */
-	private void showItemDialogMenu(final int position) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.item_edit);
-		builder.setItems(R.array.history_menu_list,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						switch (which) {
-						case 0:
-							onMenuItemResendSMS(position);
-							break;
-						case 1:
-							onMenuItemDelete(position);
-							break;
-						}
-					}
-				});
-		builder.create().show();
+	private void onMenuItemEdit(int position) {
+		GpsContact contact = (GpsContact) adapter.getItem(position);
+		new GpsContactEditor(this, R.string.contact_editor_edit, contact)
+				.show();
 	}
 
 	/**
-	 * This method is invoked when the user chose to delete an history item.
+	 * This method is invoked when the user chose to add a new contact item.
+	 */
+	private void onMenuItemAdd() {
+		new GpsContactEditor(this, R.string.contact_editor_add, null).show();
+	}
+
+	/**
+	 * This method is invoked when the user chose to delete a contact item.
 	 * 
 	 * @param position
-	 *            The position of history item to be deleted.
+	 *            The position of contact item to be deleted.
 	 */
 	private void onMenuItemDelete(int position) {
-		final History history = (History) adapter.getItem(position);
-		if (history != null) {
+		final GpsContact contact = (GpsContact) adapter.getItem(position);
+		if (contact != null) {
 			showConfirmationDialog(
 					R.string.remove_history,
-					app.getString(R.string.remove_history_question,
-							history.getSmsCommand()), CONFIRM_ID_DELETE,
-					history);
-		}
-	}
-
-	/**
-	 * This method is invoked when the user chose to resend an history item.
-	 * 
-	 * @param position
-	 *            The position of history item to be resend.
-	 */
-	private void onMenuItemResendSMS(int position) {
-		final History history = (History) adapter.getItem(position);
-		if (history != null) {
-			showConfirmationDialog(
-					R.string.resend_command,
-					app.getString(R.string.resend_command_question,
-							history.getSmsCommand()), CONFIRM_ID_RESEND,
-					history);
+					app.getString(R.string.remove_gps_contact_question,
+							contact.getName()), CONFIRM_ID_DELETE, contact);
 		}
 	}
 
@@ -183,39 +205,23 @@ public class HistoryActivity extends BaseActivity {
 			Object anObject) {
 		if (positive) {
 			switch (confirmationId) {
-			case CONFIRM_ID_RESEND:
-				doResendSMS((History) anObject);
-				break;
 			case CONFIRM_ID_DELETE:
-				doDeleteHistory((History) anObject);
+				doDeleteContact((GpsContact) anObject);
 				break;
 			}
 		}
 	}
 
 	/**
-	 * Remove the history from the list.
+	 * Delete the provided contact from the list.
 	 * 
-	 * @param history
-	 *            History to be removed.
+	 * @param contact
+	 *            The contact to be deleted.
 	 */
-	private void doDeleteHistory(History history) {
+	private void doDeleteContact(GpsContact contact) {
 		app.showProgressDialog(this, R.string.please_wait);
-		app.getHistories().remove(history);
-		app.historiesSave();
-		reloadAdapter();
-	}
-
-	/**
-	 * Resend a SMS command from the history.
-	 * 
-	 * @param history
-	 *            History with the command to be resend.
-	 */
-	private void doResendSMS(History history) {
-		app.showProgressDialog(this, R.string.please_wait);
-		app.sendSMS(this, HistoryActivity.class, history.getPhoneNumber(),
-				history.getSmsCommand());
+		app.getContacts().remove(contact);
+		app.contactsSave();
 		reloadAdapter();
 	}
 }

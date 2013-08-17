@@ -18,14 +18,13 @@
  */
 package ro.ciubex.tkconfig.activities;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.dialogs.EditorDialog;
 import ro.ciubex.tkconfig.dialogs.ParameterEditor;
 import ro.ciubex.tkconfig.list.CommandListAdapter;
 import ro.ciubex.tkconfig.models.Command;
+import ro.ciubex.tkconfig.models.Constants;
+import ro.ciubex.tkconfig.models.GpsContact;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,8 +42,6 @@ import android.widget.ListView;
  * 
  */
 public class TKConfigActivity extends BaseActivity {
-	private static Logger logger = Logger.getLogger(TKConfigActivity.class
-			.getName());
 	private CommandListAdapter adapter;
 	private ListView commandsList;
 
@@ -52,6 +49,7 @@ public class TKConfigActivity extends BaseActivity {
 	private final int CONFIRM_ID_SMS_SEND = 1;
 	private final int CONFIRM_ID_PARAMETERS = 2;
 	private final int CONFIRM_ID_DONATE = 3;
+	private final int SMS_NO_CONTACT = 4;
 
 	private static final int REQUEST_CODE_SETTINGS = 0;
 	private static final int REQUEST_CODE_ABOUT = 1;
@@ -96,7 +94,8 @@ public class TKConfigActivity extends BaseActivity {
 		commandsList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				if (position > -1 && position < adapter.getCount()) {
 					showItemDialogMenu(position);
 				}
@@ -285,24 +284,29 @@ public class TKConfigActivity extends BaseActivity {
 	 */
 	public void prepareCommandParameter(final Command command,
 			final int parameterPosition) {
-		if (parameterPosition < command.getParametersSize()) {
-			ParameterEditor ped = new ParameterEditor(this, command,
-					parameterPosition);
-			ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-				@Override
-				public void onDismiss(DialogInterface dialog) {
-					// move to next parameter
-					prepareCommandParameter(command, parameterPosition + 1);
-				}
-			});
-			ped.show();
+		String temp = command.getParameterName(parameterPosition);
+		if (Constants.PASSWORD.equals(temp)) {
+			prepareCommandParameter(command, parameterPosition + 1);
 		} else {
-			if (command.hasParametersModified()) {
-				app.saveCommandParameters(command);
-				command.setParametersModified(false);
+			if (parameterPosition < command.getParametersSize()) {
+				ParameterEditor ped = new ParameterEditor(this, command,
+						parameterPosition);
+				ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						// move to next parameter
+						prepareCommandParameter(command, parameterPosition + 1);
+					}
+				});
+				ped.show();
+			} else {
+				if (command.hasParametersModified()) {
+					app.saveCommandParameters(command);
+					command.setParametersModified(false);
+				}
+				showSendSMSConfirmation(command);
 			}
-			showSendSMSConfirmation(command);
 		}
 	}
 
@@ -313,12 +317,51 @@ public class TKConfigActivity extends BaseActivity {
 	 * @param command
 	 *            The command to be send to the GPS tracker.
 	 */
-	private void showSendSMSConfirmation(Command command) {
-		showConfirmationDialog(
-				R.string.send_sms_title,
-				app.getString(R.string.send_sms_question,
-						command.getSMSCommand(), app.getGPSPhoneNumber()),
-				CONFIRM_ID_SMS_SEND, command);
+	private void showSendSMSConfirmation(final Command command) {
+		int i, size = app.getContacts().size();
+		CharSequence[] items = new CharSequence[size];
+		boolean[] checkedItems = new boolean[size];
+		i = 0;
+		for (GpsContact contact : app.getContacts()) {
+			items[i] = contact.getName();
+			checkedItems[i] = contact.isSelected();
+			i++;
+		}
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_email)
+				.setTitle(
+						app.getString(R.string.send_sms_question,
+								command.getSMSCommandShow()))
+				.setMultiChoiceItems(items, checkedItems,
+						new DialogInterface.OnMultiChoiceClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which, boolean isChecked) {
+								GpsContact contact = app.getContacts().get(
+										which);
+								if (contact != null) {
+									contact.setSelected(isChecked);
+								}
+							}
+						})
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								onConfirmation(true, CONFIRM_ID_SMS_SEND,
+										command);
+							}
+						})
+				.setNegativeButton(R.string.no,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								onConfirmation(false, CONFIRM_ID_SMS_SEND,
+										command);
+							}
+						}).show();
 	}
 
 	/**
@@ -328,10 +371,22 @@ public class TKConfigActivity extends BaseActivity {
 	 *            The command to be send.
 	 */
 	private void doSendSMS(Command command) {
-		String phoneNo = app.getGPSPhoneNumber();
 		String cmd = command.getSMSCommand();
-		logger.log(Level.INFO, "Send SMS:" + cmd);
-		app.sendSMS(this, TKConfigActivity.class, phoneNo, cmd);
+		boolean result = false;
+		for (GpsContact contact : app.getContacts()) {
+			if (contact.isSelected()) {
+				result = true;
+				break;
+			}
+		}
+		app.contactsSave();
+		if (result) {
+			app.sendSMS(this, TKConfigActivity.class, cmd);
+		} else {
+			showMessageDialog(R.string.information,
+					app.getString(R.string.sms_no_contact), SMS_NO_CONTACT,
+					command);
+		}
 	}
 
 	/**
@@ -344,6 +399,10 @@ public class TKConfigActivity extends BaseActivity {
 	protected boolean onMenuItemSelected(int menuItemId) {
 		boolean processed = false;
 		switch (menuItemId) {
+		case R.id.menu_add:
+			processed = true;
+			onMenuItemAdd();
+			break;
 		case R.id.menu_settings:
 			processed = onMenuSettings();
 			break;

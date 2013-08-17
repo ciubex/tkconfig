@@ -26,6 +26,7 @@
     <string name="menu_about">About</string>
     <string name="menu_back">Back</string>
     <string name="menu_license">License</string>
+    <string name="menu_add">Add</string>
 
     <!-- Context menu -->
     <string name="item_edit">Choose:</string>
@@ -36,9 +37,13 @@
         <item>Add</item>
         <item>Delete</item>
     </string-array>
-    
     <string-array name="history_menu_list">
         <item>Resend SMS</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="contacts_menu_list">
+        <item>Edit</item>
+        <item>Add</item>
         <item>Delete</item>
     </string-array>
 
@@ -53,14 +58,15 @@
 
     <!-- SMS sending -->
     <string name="send_sms_title">Send SMS:</string>
-    <string name="send_sms_question">\"%1$s\"\n to the number: %2$s\nContinue?</string>
+    <string name="send_sms_question">\"%s\"\nContinue?</string>
     <string name="sms_prepare_title">Check SMS parameters:</string>
     <string name="sms_prepare_message">The SMS command contain following parameters:\n%s\nDo you want to modify them?</string>
+    <string name="sms_no_contact">You have not sellected any GPS contact to send the message!</string>
 
     <!-- Parameter editor -->
     <string name="edit_parameter">Edit parameter:</string>
     <string name="parameter">parameter</string>
-    
+
     <!-- History list view -->
     <string name="history">History</string>
     <string name="no_history">No History</string>
@@ -77,6 +83,8 @@
     <string name="settings_title">Settings</string>
     <string name="settings_summary">Settings</string>
     <string name="general_settings">General settings</string>
+    <string name="gps_contacts">GPS contacts list</string>
+    <string name="gps_contacts_desc">See your GPS contact list</string>
     <string name="gps_phone_number">GPS phone number</string>
     <string name="gps_phone_number_details">Set your GPS tracker phone number.</string>
     <string name="gps_phone_number_default">0123456789</string>
@@ -89,6 +97,16 @@
     <string name="reset_commands_question">Reset commands?</string>
     <string name="reset_commands_question_desc">Are you sure you want to reset all commands to the default state?</string>
 
+    <!-- GPS contacts -->
+    <string name="no_contacts">No GPS contacts defined.</string>
+    <string name="gps_contacts_list">GPS contacts list</string>
+    <string name="contact_name">GPS contact name</string>
+    <string name="contact_phone">GPS phone number</string>
+    <string name="contact_selected">Set this GPS contact selected</string>
+    <string name="contact_editor_add">Add a new GPS contact</string>
+    <string name="contact_editor_edit">Edit a GPS contact</string>
+    <string name="remove_gps_contact_question">Do you want to remove the contact:\n\"%s\"?</string>
+
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>
     <string name="donate_message">If you appreciate this application, please do a donation!\nPressing YES button, you will be sent using your default browser to a PayPal donnation page.\nThank you for using this application!</string>
@@ -100,10 +118,12 @@
 <![CDATA[
         <b>Application version: %s</b><br/>
         I created this application to easily send SMS commands to a TK 102 GPS tracker or other tracking device which use the SMS messages for the configuration.<br/>
+        Application is created to support and send the same message to multiple GPS in same time. The user can manage a list of GPS into the Settings. Before the message to be sent all GPS contacts appear as a check box list, the message will be sent only to selected contacts.<br/>
 		This application only send SMS messages to the GPS and do not interpret the GPS SMS response.<br/>
 		<br/>
 		The command messages can contain parameters, each parameter should have on front and at the end the ? character.<br/>
-		e.g. ?password?<br/>
+		e.g. ?password? or ?speed?<br/>
+		The \'password\' parrameter is a special parameter and is replaced with the proper GPS password when the messages is sent.<br/>
 		<br/>
 		The user can define own parameters and commands, can be modified or deleted existing commands also. Each parameter value is saved into application preferences and are available when it\'s needed.<br/>
 		<br/>
@@ -113,6 +133,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        <b>Version 1.7</b><br/>
+		- Added support for multiple GPS trackers.<br/>
+		<br/>
         <b>Version 1.6.1</b><br/>
 		- Fixed the history hour time to show in 24h format.<br/>
 		<br/>

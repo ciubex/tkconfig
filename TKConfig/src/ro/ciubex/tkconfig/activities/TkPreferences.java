@@ -22,6 +22,7 @@ import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -43,13 +44,22 @@ public class TkPreferences extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		application = (TKConfigApplication) getApplication();
 		addPreferencesFromResource(R.xml.tk_preferences);
-		prepareCommandsReset();
+		prepareCommands();
 	}
 
 	/**
-	 * Prepare reset preference handler
+	 * Prepare preference handler
 	 */
-	private void prepareCommandsReset() {
+	private void prepareCommands() {
+		Preference preferencesGpsContacts = (Preference) findPreference("gpsContacts");
+		preferencesGpsContacts
+				.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+					@Override
+					public boolean onPreferenceClick(Preference preference) {
+						return onShowGPSContacts();
+					}
+				});
 		Preference preferencesReset = (Preference) findPreference("resetCommands");
 		preferencesReset
 				.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -59,6 +69,17 @@ public class TkPreferences extends PreferenceActivity {
 						return onCommandsReset();
 					}
 				});
+	}
+
+	/**
+	 * Show the GPS contact list.
+	 * 
+	 * @return Always will be returned TRUE.
+	 */
+	private boolean onShowGPSContacts() {
+		Intent intent = new Intent(getBaseContext(), GpsContactActivity.class);
+		startActivityForResult(intent, 1);
+		return true;
 	}
 
 	/**

@@ -2,14 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10sp" >
+    android:orientation="vertical" >
 
     <EditText
-        android:id="@+id/command_name"
+        android:id="@+id/contact_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/command_name"
+        android:hint="@string/contact_name"
         android:inputType="text"
         android:singleLine="true" >
 
@@ -17,23 +16,26 @@
     </EditText>
 
     <EditText
-        android:id="@+id/command_the"
+        android:id="@+id/contact_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/command_the"
-        android:inputType="text"
+        android:hint="@string/contact_phone"
+        android:inputType="text|number"
         android:singleLine="true" />
 
     <EditText
-        android:id="@+id/command_description"
+        android:id="@+id/contact_passwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top|left"
-        android:hint="@string/command_description"
-        android:inputType="textMultiLine"
-        android:lines="4"
-        android:maxLines="10"
-        android:scrollbars="vertical" />
+        android:hint="@string/gps_password"
+        android:inputType="text|number"
+        android:singleLine="true" />
+
+    <CheckBox
+        android:id="@+id/contact_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/contact_selected" />
 
     <RelativeLayout
         android:layout_width="match_parent"

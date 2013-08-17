@@ -37,6 +37,7 @@ public class Command {
 	private List<String> parameters;
 	private Map<String, Parameter> availableParameters;
 	private boolean parametersModified;
+	private int passwords;
 
 	public Command(String name, String command) {
 		this(name, command, "");
@@ -46,6 +47,7 @@ public class Command {
 		this.name = name;
 		this.command = command;
 		this.description = description;
+		passwords = 0;
 		parameters = new ArrayList<String>();
 		availableParameters = new HashMap<String, Parameter>();
 		prepareParameters();
@@ -84,7 +86,7 @@ public class Command {
 	}
 
 	public boolean hasParameters() {
-		return parameters.size() > 0;
+		return parameters.size() - passwords > 0;
 	}
 
 	public boolean needParameters() {
@@ -128,7 +130,7 @@ public class Command {
 	 *         defined.
 	 */
 	public String getParameterValue(String parameterName) {
-		String result = parameterName;
+		String result = null;
 		if (availableParameters.containsKey(parameterName)) {
 			Parameter p = availableParameters.get(parameterName);
 			if (p != null) {
@@ -146,14 +148,23 @@ public class Command {
 	 */
 	public String getParametersListToBeShow() {
 		StringBuilder sb = new StringBuilder("");
+		String temp;
 		int i = 1;
 		for (String paramName : parameters) {
-			if (sb.length() > 0) {
-				sb.append(",\n");
+			// skip if is the password
+			if (!Constants.PASSWORD.equals(paramName)) {
+				temp = getParameterValue(paramName);
+				if (sb.length() > 0) {
+					sb.append(",\n");
+				}
+				sb.append(i).append(". ").append(paramName).append(": ");
+				if (temp != null) {
+					sb.append(temp);
+				} else {
+					sb.append('?').append(paramName).append('?');
+				}
+				i++;
 			}
-			sb.append(i).append(". ").append(paramName).append(": ")
-					.append(getParameterValue(paramName));
-			i++;
 		}
 		return sb.toString();
 	}
@@ -165,10 +176,35 @@ public class Command {
 	 */
 	public String getSMSCommand() {
 		String smsText = command;
+		String temp;
 		if (hasParameters()) {
 			for (String param : parameters) {
-				smsText = smsText.replaceAll("\\?" + param + "\\?",
-						getParameterValue(param));
+				temp = getParameterValue(param);
+				if (temp != null) {
+					smsText = smsText.replaceAll("\\?" + param + "\\?", temp);
+				}
+			}
+		}
+		return smsText;
+	}
+
+	/**
+	 * Get prepared SMS command to be showed to the user, based on the
+	 * parameters and associated values.
+	 * 
+	 * @return The SMS command to be showed.
+	 */
+	public String getSMSCommandShow() {
+		String smsText = command;
+		String temp;
+		for (String param : parameters) {
+			if (Constants.PASSWORD.equals(param)) {
+				temp = Constants.STARS;
+			} else {
+				temp = getParameterValue(param);
+			}
+			if (temp != null) {
+				smsText = smsText.replaceAll("\\?" + param + "\\?", temp);
 			}
 		}
 		return smsText;
@@ -203,9 +239,14 @@ public class Command {
 	 * Prepare the parameters list.
 	 */
 	private void prepareParameters() {
-		Matcher m = Utilities.PARAMETERS.matcher(command);
+		Matcher m = Constants.PARAMETERS.matcher(command);
+		String temp;
 		while (m.find()) {
-			parameters.add(Utilities.getParameterName(m.group()));
+			temp = Utilities.getParameterName(m.group());
+			if (Constants.PASSWORD.equals(temp)) {
+				passwords++;
+			}
+			parameters.add(temp);
 		}
 	}
 

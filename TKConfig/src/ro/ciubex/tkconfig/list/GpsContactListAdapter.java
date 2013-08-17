@@ -20,52 +20,54 @@ package ro.ciubex.tkconfig.list;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
-import ro.ciubex.tkconfig.models.History;
-import ro.ciubex.tkconfig.models.Utilities;
+import ro.ciubex.tkconfig.models.GpsContact;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
- * This adapter is used to populate the history list view.
+ * This adapter is used to populate the GPS contact list view.
  * 
  * @author Claudiu Ciobotariu
  * 
  */
-public class HistoryListAdapter extends BaseAdapter {
+public class GpsContactListAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private TKConfigApplication application;
+	private boolean modified;
 
-	public HistoryListAdapter(TKConfigApplication application) {
+	public GpsContactListAdapter(TKConfigApplication application) {
 		mInflater = (LayoutInflater) application
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.application = application;
 	}
 
 	/**
-	 * Get the number of histories in list.
+	 * Get the number of GPS contacts in list.
 	 * 
-	 * @return The number of histories.
+	 * @return The number of GPS contacts.
 	 */
 	@Override
 	public int getCount() {
-		return application.getHistories().size();
+		return application.getContacts().size();
 	}
 
 	/**
-	 * Get the history event from the specified position.
+	 * Get the GPS contact from the specified position.
 	 * 
 	 * @param position
 	 *            The position from the list.
-	 * @return The history event at specified position.
+	 * @return The GPS contact at specified position.
 	 */
 	@Override
 	public Object getItem(int position) {
 		return position > -1 && position < getCount() ? application
-				.getHistories().get(position) : null;
+				.getContacts().get(position) : null;
 	}
 
 	/**
@@ -92,39 +94,64 @@ public class HistoryListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		HistoryViewHolder viewHolder = null;
+		GpsContactViewHolder viewHolder = null;
 		if (view != null) {
-			viewHolder = (HistoryViewHolder) view.getTag();
+			viewHolder = (GpsContactViewHolder) view.getTag();
 		} else {
-			view = mInflater.inflate(R.layout.history_item_list_layout, null);
-			viewHolder = new HistoryViewHolder();
-			viewHolder.historyCommand = (TextView) view
-					.findViewById(R.id.history_command);
-			viewHolder.historyPhone = (TextView) view
-					.findViewById(R.id.history_phone);
-			viewHolder.historyDateTime = (TextView) view
-					.findViewById(R.id.history_date_time);
+			view = mInflater.inflate(R.layout.gps_contact_item_list_layout,
+					null);
+			viewHolder = new GpsContactViewHolder();
+			viewHolder.selected = (CheckBox) view
+					.findViewById(R.id.contact_selected);
+			viewHolder.name = (TextView) view.findViewById(R.id.gps_name);
+			viewHolder.phone = (TextView) view.findViewById(R.id.gps_phone);
 			view.setTag(viewHolder);
 		}
 		if (viewHolder != null) {
-			History history = (History) getItem(position);
-			if (history != null) {
-				viewHolder.historyCommand.setText(history.getSmsCommand());
-				viewHolder.historyPhone.setText(history.getPhoneNumber());
-				viewHolder.historyDateTime.setText(Utilities.formatDateTime(
-						application, history.getDateTime()));
+			final GpsContact contact = (GpsContact) getItem(position);
+			if (contact != null) {
+				viewHolder.selected.setChecked(contact.isSelected());
+				viewHolder.name.setText(contact.getName());
+				viewHolder.phone.setText(contact.getPhone());
+				viewHolder.selected.setOnClickListener(new OnClickListener() {
+					public void onClick(View v) {
+						CheckBox cb = (CheckBox) v;
+						contact.setSelected(cb.isChecked());
+						modified = true;
+					}
+				});
 			}
 		}
 		return view;
 	}
 
 	/**
-	 * View holder for history item within the list.
+	 * View holder for GPS contact item within the list.
 	 * 
 	 */
-	static class HistoryViewHolder {
-		TextView historyCommand;
-		TextView historyPhone;
-		TextView historyDateTime;
+	static class GpsContactViewHolder {
+		CheckBox selected;
+		TextView name;
+		TextView phone;
 	}
+
+	/**
+	 * Obtain the modified flag.
+	 * 
+	 * @return True if the adapter items are modified.
+	 */
+	public boolean isModified() {
+		return modified;
+	}
+
+	/**
+	 * Set the modified flag.
+	 * 
+	 * @param modified
+	 *            The modified flag.
+	 */
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
+
 }

@@ -21,7 +21,6 @@ package ro.ciubex.tkconfig.models;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.regex.Pattern;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
@@ -33,9 +32,6 @@ import ro.ciubex.tkconfig.TKConfigApplication;
  * 
  */
 public class Utilities {
-	/** This is the Regular expression used to identify the possible parameters **/
-	public static final Pattern PARAMETERS = Pattern
-			.compile("\\?[\\w\\d-]+\\?");
 
 	/**
 	 * Extract the string between ? signs. e.g.: For ?parameter-name? will be
