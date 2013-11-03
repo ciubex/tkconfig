@@ -133,6 +133,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 1.8<br/>
+        - Refactored the OK and Cancel buttons positions.<br/>
+        <br/>
         <b>Version 1.7</b><br/>
 		- Added support for multiple GPS trackers.<br/>
 		<br/>
