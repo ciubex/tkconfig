@@ -18,21 +18,12 @@
  */
 package ro.ciubex.tkconfig.models;
 
-import java.util.regex.Pattern;
-
 /**
- * Here should be defined all constants.
+ * This interface should be implemented to handle contact choose.
  * 
  * @author Claudiu Ciobotariu
  * 
  */
-public interface Constants {
-	public static final int OK = 0;
-	public static final int ERROR = 1;
-	public static final String PASSWORD = "password";
-	public static final String STARS = "******";
-	
-	/** This is the Regular expression used to identify the possible parameters **/
-	public static final Pattern PARAMETERS = Pattern
-			.compile("\\?[\\w\\d-]+\\?");
+public interface ContactChooseHandler {
+	public void onContactChoose(ContactModel contact);
 }

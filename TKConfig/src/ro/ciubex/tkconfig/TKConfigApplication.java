@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 
 import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.Constants;
+import ro.ciubex.tkconfig.models.ContactChooseHandler;
+import ro.ciubex.tkconfig.models.ContactModel;
 import ro.ciubex.tkconfig.models.GpsContact;
 import ro.ciubex.tkconfig.models.History;
 import android.app.Application;
@@ -36,6 +38,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
+import android.widget.Toast;
 
 /**
  * This is main application class. Here are defined the progress dialog and
@@ -55,6 +58,8 @@ public class TKConfigApplication extends Application {
 	private SharedPreferences sharedPreferences;
 	private boolean mustReloadCommands;
 	private SmsManager smsManager;
+	private ContactChooseHandler contactChooseHandler;
+	private List<ContactModel> phoneContacts;
 
 	/**
 	 * This method is invoked when the application is created.
@@ -526,6 +531,125 @@ public class TKConfigApplication extends Application {
 		editor.remove("gpsPhoneNumber");
 		editor.remove("password");
 		editor.commit();
+	}
+	
+	/**
+	 * Method used to show the informations.
+	 * 
+	 * @param context
+	 *            The context where should be displayed the message.
+	 * @param resourceMessageId
+	 *            The string resource id.
+	 */
+	public void showMessageInfo(Context context, int resourceMessageId) {
+		String message = getString(resourceMessageId);
+		showMessageInfo(context, message);
+	}
+
+	/**
+	 * Method used to show formated informations.
+	 * 
+	 * @param context
+	 *            The context where should be displayed the message.
+	 * @param resourceMessageId
+	 *            The string resource id.
+	 * @param formatArgs
+	 *            The arguments used on formated message.
+	 */
+	public void showMessageInfo(Context context, int resourceMessageId,
+			Object... formatArgs) {
+		String message = getString(resourceMessageId, formatArgs);
+		showMessageInfo(context, message);
+	}
+
+	/**
+	 * This method is used to show on front of a context a toast message.
+	 * 
+	 * @param context
+	 *            The context where should be showed the message.
+	 * @param message
+	 *            The message used to be displayed on the information box.
+	 */
+	public void showMessageInfo(Context context, String message) {
+		if (message != null && message.length() > 0) {
+			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+		}
+	}
+
+	/**
+	 * Method used to show the errors.
+	 * 
+	 * @param context
+	 *            The context where should be displayed the error message.
+	 * @param resourceMessageId
+	 *            The string resource id.
+	 */
+	public void showMessageError(Context context, int resourceMessageId) {
+		String message = getString(resourceMessageId);
+		showMessageError(context, message);
+	}
+
+	/**
+	 * Method used to show error formated messages.
+	 * 
+	 * @param context
+	 *            The context where should be displayed the error message.
+	 * @param resourceMessageId
+	 *            The string resource id.
+	 * @param formatArgs
+	 *            The arguments used on formated message.
+	 */
+	public void showMessageError(Context context, int resourceMessageId,
+			Object... formatArgs) {
+		String message = getString(resourceMessageId, formatArgs);
+		showMessageError(context, message);
+	}
+
+	/**
+	 * This method is used to show on front of a context a toast message
+	 * containing applications errors.
+	 * 
+	 * @param context
+	 *            The context where should be showed the message.
+	 * @param message
+	 *            The error message used to be displayed on the information box.
+	 */
+	public void showMessageError(Context context, String message) {
+		if (message != null && message.length() > 0) {
+			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+		}
+	}
+
+	/**
+	 * Obtain the contact choose handler.
+	 * @return The contact choose handler.
+	 */
+	public ContactChooseHandler getContactChooseHandler() {
+		return contactChooseHandler;
+	}
+
+	/**
+	 * Set the contact choose handler.
+	 * @param contactChooseHandler The contact choose handler.
+	 */
+	public void setContactChooseHandler(ContactChooseHandler contactChooseHandler) {
+		this.contactChooseHandler = contactChooseHandler;
+	}
+
+	/**
+	 * List phone contacts.
+	 * @return the phoneContacts
+	 */
+	public List<ContactModel> getPhoneContacts() {
+		return phoneContacts;
+	}
+
+	/**
+	 * Save list phone contacts for future use on current application session.
+	 * @param phoneContacts the phoneContacts to set
+	 */
+	public void setPhoneContacts(List<ContactModel> phoneContacts) {
+		this.phoneContacts = phoneContacts;
 	}
 
 }

@@ -16,23 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ro.ciubex.tkconfig.models;
-
-import java.util.regex.Pattern;
+package ro.ciubex.tkconfig.tasks;
 
 /**
- * Here should be defined all constants.
+ * Default result model used on asynchronous tasks to store process results:
+ * task ID, result ID (OK or ERROR) and result message string.
  * 
  * @author Claudiu Ciobotariu
  * 
  */
-public interface Constants {
-	public static final int OK = 0;
-	public static final int ERROR = 1;
-	public static final String PASSWORD = "password";
-	public static final String STARS = "******";
-	
-	/** This is the Regular expression used to identify the possible parameters **/
-	public static final Pattern PARAMETERS = Pattern
-			.compile("\\?[\\w\\d-]+\\?");
+public class DefaultAsyncTaskResult {
+	public int taskId;
+	public int resultId;
+	public String resultMessage;
 }

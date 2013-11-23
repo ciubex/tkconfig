@@ -20,12 +20,17 @@ package ro.ciubex.tkconfig.dialogs;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
+import ro.ciubex.tkconfig.activities.ContactsActivity;
 import ro.ciubex.tkconfig.activities.GpsContactActivity;
+import ro.ciubex.tkconfig.models.ContactChooseHandler;
+import ro.ciubex.tkconfig.models.ContactModel;
 import ro.ciubex.tkconfig.models.GpsContact;
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 /**
  * This class is used to define a dialog for GPS contact editing.
@@ -33,16 +38,30 @@ import android.widget.EditText;
  * @author Claudiu Ciobotariu
  * 
  */
-public class GpsContactEditor extends BaseDialog {
+public class GpsContactEditor extends BaseDialog implements
+		ContactChooseHandler {
+	private TKConfigApplication parentApplication;
 	private GpsContact contact;
 	private EditText contactName, contactPhone, contactPassword;
+	private ImageButton doContactPicker;
 	private CheckBox contactSelected;
 
-	public GpsContactEditor(Context context, int titleId, GpsContact contact) {
+	public GpsContactEditor(Context context,
+			TKConfigApplication parentApplication, int titleId,
+			GpsContact contact) {
 		super(context);
+		this.parentApplication = parentApplication;
 		this.contact = contact;
 		initDialog(R.layout.gps_contact_editor, titleId);
 		initEditTextFields();
+		initContactChooseHandler();
+	}
+
+	/**
+	 * Initialize the contact choose handler.
+	 */
+	private void initContactChooseHandler() {
+		parentApplication.setContactChooseHandler(this);
 	}
 
 	/**
@@ -64,6 +83,8 @@ public class GpsContactEditor extends BaseDialog {
 			contactPassword.setText(contact.getPassword());
 			contactSelected.setChecked(contact.isSelected());
 		}
+		doContactPicker = (ImageButton) findViewById(R.id.do_contact_picker);
+		doContactPicker.setOnClickListener(this);
 		super.initEditTextFields();
 	}
 
@@ -75,10 +96,14 @@ public class GpsContactEditor extends BaseDialog {
 	 */
 	@Override
 	public void onClick(View view) {
-		if (view == btnOk) {
+		if (view == doContactPicker) {
+			onContactPicker();
+		} else if (view == btnOk) {
 			onSave();
+			super.onClick(view);
+		} else {
+			super.onClick(view);
 		}
-		super.onClick(view);
 	}
 
 	/**
@@ -102,6 +127,22 @@ public class GpsContactEditor extends BaseDialog {
 			}
 			((GpsContactActivity) parentActivity).reloadAdapter();
 			((TKConfigApplication) application).contactsSave();
+		}
+	}
+
+	/**
+	 * Is time to launch the contact list view.
+	 */
+	private void onContactPicker() {
+		Intent intentContactsActivity = new Intent(parentActivity, ContactsActivity.class);
+		parentActivity.startActivity(intentContactsActivity);
+	}
+
+	@Override
+	public void onContactChoose(ContactModel contact) {
+		if (contact != null) {
+			contactName.setText(contact.getContactName());
+			contactPhone.setText(contact.getPhoneNumber());
 		}
 	}
 }

@@ -106,6 +106,15 @@
     <string name="contact_editor_add">Add a new GPS contact</string>
     <string name="contact_editor_edit">Edit a GPS contact</string>
     <string name="remove_gps_contact_question">Do you want to remove the contact:\n\"%s\"?</string>
+    <string name="points">&#8230;</string>
+    
+    <!-- Phone contacts -->
+    <string name="contacts_list">Contacts list</string>
+    <string name="no_phone_contacts">You don\'t have contacts</string>
+    <string name="contacts_loaded">Were loaded %d contacts</string>
+    <string name="contact_image">[ ]</string>
+    <string name="filter">Filter</string>
+    <string name="filtering">Filtering&#8230;</string>
 
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>
@@ -133,6 +142,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.0<br/>
+        - Added support to add GPS number and name from phonebook.<br/>
+        <br/>
         Version 1.8<br/>
         - Refactored the OK and Cancel buttons positions.<br/>
         <br/>

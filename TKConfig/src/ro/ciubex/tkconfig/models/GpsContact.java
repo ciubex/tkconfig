@@ -18,6 +18,8 @@
  */
 package ro.ciubex.tkconfig.models;
 
+import java.io.Serializable;
+
 /**
  * This is a model class used to define a GPS contact with a name and its phone
  * number.
@@ -25,7 +27,8 @@ package ro.ciubex.tkconfig.models;
  * @author Claudiu Ciobotariu
  * 
  */
-public class GpsContact {
+public class GpsContact implements Serializable {
+	private static final long serialVersionUID = 7654342853405113225L;
 	private String name;
 	private String phone;
 	private String password;

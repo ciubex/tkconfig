@@ -162,7 +162,7 @@ public class GpsContactActivity extends BaseActivity {
 	 */
 	private void onMenuItemEdit(int position) {
 		GpsContact contact = (GpsContact) adapter.getItem(position);
-		new GpsContactEditor(this, R.string.contact_editor_edit, contact)
+		new GpsContactEditor(this, app, R.string.contact_editor_edit, contact)
 				.show();
 	}
 
@@ -170,7 +170,7 @@ public class GpsContactActivity extends BaseActivity {
 	 * This method is invoked when the user chose to add a new contact item.
 	 */
 	private void onMenuItemAdd() {
-		new GpsContactEditor(this, R.string.contact_editor_add, null).show();
+		new GpsContactEditor(this, app, R.string.contact_editor_add, null).show();
 	}
 
 	/**

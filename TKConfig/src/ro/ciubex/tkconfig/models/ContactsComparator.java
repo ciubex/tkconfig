@@ -18,21 +18,39 @@
  */
 package ro.ciubex.tkconfig.models;
 
-import java.util.regex.Pattern;
+import java.util.Comparator;
 
 /**
- * Here should be defined all constants.
+ * This comparator is used to sort the contacts on the list.
  * 
  * @author Claudiu Ciobotariu
  * 
  */
-public interface Constants {
-	public static final int OK = 0;
-	public static final int ERROR = 1;
-	public static final String PASSWORD = "password";
-	public static final String STARS = "******";
-	
-	/** This is the Regular expression used to identify the possible parameters **/
-	public static final Pattern PARAMETERS = Pattern
-			.compile("\\?[\\w\\d-]+\\?");
+public class ContactsComparator implements Comparator<ContactModel> {
+
+	@Override
+	public int compare(ContactModel o1, ContactModel o2) {
+		String s1 = o1.getContactName();
+		String s2 = o2.getContactName();
+		int n1 = s1 != null ? s1.length() : 0;
+		int n2 = s2 != null ? s2.length() : 0;
+		int min = Math.min(n1, n2);
+		for (int i = 0; i < min; i++) {
+			char c1 = s1.charAt(i);
+			char c2 = s2.charAt(i);
+			if (c1 != c2) {
+				c1 = Character.toUpperCase(c1);
+				c2 = Character.toUpperCase(c2);
+				if (c1 != c2) {
+					c1 = Character.toLowerCase(c1);
+					c2 = Character.toLowerCase(c2);
+					if (c1 != c2) {
+						return c1 - c2;
+					}
+				}
+			}
+		}
+		return n1 - n2;
+	}
+
 }
