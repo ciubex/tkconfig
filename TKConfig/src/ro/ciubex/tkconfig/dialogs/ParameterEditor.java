@@ -40,8 +40,20 @@ public class ParameterEditor extends BaseDialog {
 		super(context);
 		this.command = command;
 		this.parameterName = command.getParameterName(parameterPosition);
-		initDialog(R.layout.parameter_editor, R.string.edit_parameter);
+		prepareTitle();
 		initEditTextFields();
+	}
+
+	/**
+	 * Prepare dialog title.
+	 */
+	private void prepareTitle() {
+		if (parameterName != null) {
+			initDialog(R.layout.parameter_editor, application.getString(
+					R.string.edit_parameter_with_name, parameterName));
+		} else {
+			initDialog(R.layout.parameter_editor, R.string.edit_parameter);
+		}
 	}
 
 	/**

@@ -50,6 +50,7 @@ public class TKConfigActivity extends BaseActivity {
 	private final int CONFIRM_ID_PARAMETERS = 2;
 	private final int CONFIRM_ID_DONATE = 3;
 	private final int SMS_NO_CONTACT = 4;
+	private final int NO_PARAMS_TO_EDIT = 5;
 
 	private static final int REQUEST_CODE_SETTINGS = 0;
 	private static final int REQUEST_CODE_ABOUT = 1;
@@ -137,9 +138,12 @@ public class TKConfigActivity extends BaseActivity {
 							onMenuItemEdit(position);
 							break;
 						case 2:
-							onMenuItemAdd();
+							onMenuItemEditParams(position);
 							break;
 						case 3:
+							onMenuItemAdd();
+							break;
+						case 4:
 							onMenuItemDelete(position);
 							break;
 						}
@@ -157,6 +161,25 @@ public class TKConfigActivity extends BaseActivity {
 	private void onMenuItemEdit(int position) {
 		Command command = (Command) adapter.getItem(position);
 		new EditorDialog(this, R.string.edit_command, command).show();
+	}
+
+	/**
+	 * This method is invoked when the user chose to edit a command parameters.
+	 * 
+	 * @param position
+	 *            The position of command parameters to be edited.
+	 */
+	private void onMenuItemEditParams(int position) {
+		Command command = (Command) adapter.getItem(position);
+		if (command.hasParameters()) {
+			app.prepareCommandParameters(command);
+			doEditParameter(command, 0, false);
+		} else {
+			showMessageDialog(R.string.information, app.getString(command
+					.havePassword() ? R.string.no_params_to_edit_just_password
+					: R.string.no_params_to_edit, command.getName()),
+					NO_PARAMS_TO_EDIT, command);
+		}
 	}
 
 	/**
@@ -229,6 +252,43 @@ public class TKConfigActivity extends BaseActivity {
 		app.getCommands().remove(command);
 		app.commandsSave();
 		reloadAdapter();
+	}
+
+	/**
+	 * This method is to edit a command parameters.
+	 * 
+	 * @param command
+	 *            The command to be edited.
+	 * @param parameterPosition
+	 *            The position of parameter to be edited.
+	 * @param editPasswords
+	 *            If true, then edit password too.
+	 */
+	private void doEditParameter(final Command command,
+			final int parameterPosition, final boolean editPasswords) {
+		String temp;
+		if (parameterPosition < command.getParametersSize()) {
+			temp = command.getParameterName(parameterPosition);
+			if (Constants.PASSWORD.equals(temp) && !editPasswords) {
+				doEditParameter(command, parameterPosition + 1, editPasswords);
+			} else {
+				ParameterEditor ped = new ParameterEditor(this, command,
+						parameterPosition);
+				ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						// move to next parameter
+						doEditParameter(command, parameterPosition + 1,
+								editPasswords);
+					}
+				});
+				ped.show();
+			}
+		} else if (command.hasParametersModified()) {
+			app.saveCommandParameters(command);
+			command.setParametersModified(false);
+		}
 	}
 
 	/**

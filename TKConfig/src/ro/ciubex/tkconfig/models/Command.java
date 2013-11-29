@@ -294,4 +294,13 @@ public class Command {
 		parametersModified = flag;
 	}
 
+	/**
+	 * Check if the command contain password parameter.
+	 * 
+	 * @return True if the command contain passwords.
+	 */
+	public boolean havePassword() {
+		return passwords > 0;
+	}
+
 }

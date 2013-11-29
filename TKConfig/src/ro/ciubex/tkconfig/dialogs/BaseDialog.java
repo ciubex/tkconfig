@@ -69,6 +69,27 @@ public class BaseDialog extends Dialog implements View.OnClickListener {
 	protected void initDialog(int layoutResID, int titleId) {
 		setContentView(layoutResID);
 		setTitle(titleId);
+		initButtons();
+	}
+
+	/**
+	 * Initialize the dialog using specified layout and title.
+	 * 
+	 * @param layoutResID
+	 *            Layout ID.
+	 * @param title
+	 *            Title string.
+	 */
+	protected void initDialog(int layoutResID, String title) {
+		setContentView(layoutResID);
+		setTitle(title);
+		initButtons();
+	}
+
+	/**
+	 * Initialize default buttons.
+	 */
+	private void initButtons() {
 		btnOk = (Button) findViewById(R.id.btn_ok);
 		btnOk.setOnClickListener(this);
 		btnCancel = (Button) findViewById(R.id.btn_cancel);
