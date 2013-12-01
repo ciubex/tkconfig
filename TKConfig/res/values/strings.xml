@@ -65,6 +65,9 @@
     <string name="sms_prepare_title">Check SMS parameters:</string>
     <string name="sms_prepare_message">The SMS command contain following parameters:\n%s\nDo you want to modify them?</string>
     <string name="sms_no_contact">You have not sellected any GPS contact to send the message!</string>
+    <string name="sms_command_not_send">No command was send.</string>
+    <string name="sms_command_send_one">A command was send.</string>
+    <string name="sms_command_send_many">%s commands were send.</string>
 
     <!-- Parameter editor -->
     <string name="edit_parameter">Edit parameter:</string>
@@ -81,6 +84,7 @@
     <string name="remove_history_question">Do you want to remove the command:\n\"%s\"\nfrom the history list?</string>
     <string name="resend_command">Resend command</string>
     <string name="resend_command_question">Do you want to resend the command:\n\"%s\"?</string>
+    <string name="resend_command_finish">The command was send again to the GPS.</string>
 
     <!-- Preferences -->
     <string name="settings">Settings</string>
@@ -133,6 +137,7 @@
         I created this application to easily send SMS commands to a TK 102 GPS tracker or other tracking device which use the SMS messages for the configuration.<br/>
         Application is created to support and send the same message to multiple GPS in same time. The user can manage a list of GPS into the Settings. Before the message to be sent all GPS contacts appear as a check box list, the message will be sent only to selected contacts.<br/>
 		This application only send SMS messages to the GPS and do not interpret the GPS SMS response.<br/>
+		Each command is stored into a history list on the application, but also into the Sent folder for phone messenger (not supported for all phones, yet), that is the reason for the Read and Write SMS messages permissions.<br/>
 		<br/>
 		The command messages can contain parameters, each parameter should have on front and at the end the ? character.<br/>
 		e.g. ?password? or ?speed?<br/>
@@ -146,6 +151,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.2<br/>
+        - Fixed SMS history and added support for the send messages to be stored on the send folder.<br/>
+        <br/>
         Version 2.1<br/>
         - Added support to edit command parameters value from the main window without sending the SMS command.<br/>
         <br/>

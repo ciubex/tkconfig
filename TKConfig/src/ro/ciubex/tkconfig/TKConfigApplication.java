@@ -33,9 +33,11 @@ import ro.ciubex.tkconfig.models.History;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.widget.Toast;
@@ -60,6 +62,7 @@ public class TKConfigApplication extends Application {
 	private SmsManager smsManager;
 	private ContactChooseHandler contactChooseHandler;
 	private List<ContactModel> phoneContacts;
+	private Uri sendFolderUri;
 
 	/**
 	 * This method is invoked when the application is created.
@@ -400,20 +403,47 @@ public class TKConfigApplication extends Application {
 	 *            The context used to send the SMS.
 	 * @param clazz
 	 *            The sender class.
-	 * @param phoneNo
+	 * @param phoneNumber
 	 *            The phone number.
 	 * @param message
 	 *            The message to be send.
 	 */
-	public void sendSMS(Context context, Class<?> clazz, String phoneNo,
+	public void sendSMS(Context context, Class<?> clazz, String phoneNumber,
 			String message) {
-		addHistory(new History(phoneNo, message));
+		addHistory(new History(phoneNumber, message));
 		historiesSave();
-		logger.log(Level.INFO, "Send to: " + phoneNo + " the SMS:\"" + message
-				+ "\"");
+		logger.log(Level.INFO, "Send to: " + phoneNumber + " the SMS:\""
+				+ message + "\"");
 		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
 				context, clazz), 0);
-		smsManager.sendTextMessage(phoneNo, null, message, pi, null);
+		smsManager.sendTextMessage(phoneNumber, null, message, pi, null);
+		saveMessageToSendFolder(phoneNumber, message);
+	}
+
+	/**
+	 * Save the message to the Send folder from Messaging application.
+	 * 
+	 * @param phoneNumber
+	 *            The phone number were was send the message.
+	 * @param message
+	 *            The message to be saved.
+	 */
+	private void saveMessageToSendFolder(String phoneNumber, String message) {
+		ContentValues values = new ContentValues();
+		values.put("address", phoneNumber);
+		values.put("body", message);
+		try {
+			if (sendFolderUri == null) {
+				sendFolderUri = Uri.parse("content://sms/sent");
+			}
+			if (sendFolderUri != null) {
+				this.getContentResolver().insert(sendFolderUri, values);
+			}
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,
+					"Save message to the send folder:" + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -427,11 +457,20 @@ public class TKConfigApplication extends Application {
 	 *            The message to be send.
 	 */
 	public void sendSMS(Context context, Class<?> clazz, String message) {
+		int i = 0;
 		for (GpsContact contact : contacts) {
 			String cmd = prepareCommandPassword(message, contact);
 			if (contact.isSelected()) {
 				sendSMS(context, clazz, contact.getPhone(), cmd);
+				i++;
 			}
+		}
+		if (i == 1) {
+			showMessageInfo(context, R.string.sms_command_send_one);
+		} else if (i > 0) {
+			showMessageInfo(context, R.string.sms_command_send_many, "" + i);
+		} else {
+			showMessageInfo(context, R.string.sms_command_not_send);
 		}
 	}
 
@@ -532,7 +571,7 @@ public class TKConfigApplication extends Application {
 		editor.remove("password");
 		editor.commit();
 	}
-	
+
 	/**
 	 * Method used to show the informations.
 	 * 
@@ -622,6 +661,7 @@ public class TKConfigApplication extends Application {
 
 	/**
 	 * Obtain the contact choose handler.
+	 * 
 	 * @return The contact choose handler.
 	 */
 	public ContactChooseHandler getContactChooseHandler() {
@@ -630,14 +670,18 @@ public class TKConfigApplication extends Application {
 
 	/**
 	 * Set the contact choose handler.
-	 * @param contactChooseHandler The contact choose handler.
+	 * 
+	 * @param contactChooseHandler
+	 *            The contact choose handler.
 	 */
-	public void setContactChooseHandler(ContactChooseHandler contactChooseHandler) {
+	public void setContactChooseHandler(
+			ContactChooseHandler contactChooseHandler) {
 		this.contactChooseHandler = contactChooseHandler;
 	}
 
 	/**
 	 * List phone contacts.
+	 * 
 	 * @return the phoneContacts
 	 */
 	public List<ContactModel> getPhoneContacts() {
@@ -646,7 +690,9 @@ public class TKConfigApplication extends Application {
 
 	/**
 	 * Save list phone contacts for future use on current application session.
-	 * @param phoneContacts the phoneContacts to set
+	 * 
+	 * @param phoneContacts
+	 *            the phoneContacts to set
 	 */
 	public void setPhoneContacts(List<ContactModel> phoneContacts) {
 		this.phoneContacts = phoneContacts;

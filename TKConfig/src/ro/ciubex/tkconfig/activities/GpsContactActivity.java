@@ -59,7 +59,6 @@ public class GpsContactActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		app.showProgressDialog(this, R.string.please_wait);
-		app.historiesLoad();
 		reloadAdapter();
 	}
 	

@@ -74,6 +74,7 @@ public class TKConfigActivity extends BaseActivity {
 		super.onStart();
 		app.showProgressDialog(this, R.string.please_wait);
 		app.commandsLoad();
+		app.historiesLoad();
 		reloadAdapter();
 	}
 

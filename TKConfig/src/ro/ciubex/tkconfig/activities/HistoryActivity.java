@@ -58,7 +58,6 @@ public class HistoryActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		app.showProgressDialog(this, R.string.please_wait);
-		app.historiesLoad();
 		reloadAdapter();
 	}
 
@@ -216,6 +215,7 @@ public class HistoryActivity extends BaseActivity {
 		app.showProgressDialog(this, R.string.please_wait);
 		app.sendSMS(this, HistoryActivity.class, history.getPhoneNumber(),
 				history.getSmsCommand());
+		app.showMessageInfo(this, R.string.resend_command_finish);
 		reloadAdapter();
 	}
 }
