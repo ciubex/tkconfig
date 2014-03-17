@@ -19,6 +19,7 @@
 package ro.ciubex.tkconfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -73,7 +74,17 @@ public class TKConfigApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		logger.log(Level.INFO, "TKConfigApplication started!");
-		commands = new ArrayList<Command>();
+		commands = new ArrayList<Command>() {
+			private static final long serialVersionUID = 8883327862834322486L;
+
+			public boolean add(Command mt) {
+				int index = Collections.binarySearch(this, mt);
+				if (index < 0)
+					index = ~index;
+				super.add(index, mt);
+				return true;
+			}
+		};
 		histories = new ArrayList<History>();
 		contacts = new ArrayList<GpsContact>();
 		defaultLocale = Locale.getDefault();

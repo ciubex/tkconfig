@@ -33,6 +33,7 @@
 
     <string-array name="menu_list">
         <item>Send SMS</item>
+        <item>Duplicate</item>
         <item>Edit</item>
         <item>Edit ?params?</item>
         <item>Add</item>
@@ -151,6 +152,11 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.3<br/>
+        - Commands are sorted alphabetically.<br/>
+        - Added support to duplicate an existing command.<br/>
+        - Small fixes on command editor.<br/>
+        <br/>
         Version 2.2<br/>
         - Fixed SMS history and added support for the send messages to be stored on the send folder.<br/>
         <br/>

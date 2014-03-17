@@ -52,11 +52,11 @@ public class HistoryActivity extends BaseActivity {
 	}
 
 	/**
-	 * Method invoked when the activity is started.
+	 * Method invoked when the activity is resumed.
 	 */
 	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void onResume() {
+		super.onResume();
 		app.showProgressDialog(this, R.string.please_wait);
 		reloadAdapter();
 	}
@@ -85,8 +85,8 @@ public class HistoryActivity extends BaseActivity {
 	 */
 	public void reloadAdapter() {
 		adapter.notifyDataSetChanged();
-		historiesList.invalidateViews();
-		historiesList.scrollBy(0, 0);
+//		historiesList.invalidateViews();
+//		historiesList.scrollBy(0, 0);
 		historiesList.setFastScrollEnabled(app.getHistories().size() > 50);
 		app.hideProgressDialog();
 	}

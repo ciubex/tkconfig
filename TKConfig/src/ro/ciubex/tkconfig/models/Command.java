@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
  * @author Claudiu Ciobotariu
  * 
  */
-public class Command {
+public class Command implements Comparable<Command> {
 	private String name;
 	private String command;
 	private String description;
@@ -67,6 +67,7 @@ public class Command {
 
 	public void setCommand(String command) {
 		this.command = command;
+		prepareParameters();
 	}
 
 	public String getDescription() {
@@ -234,6 +235,29 @@ public class Command {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public int compareTo(Command another) {
+		int n1 = name != null ? name.length() : 0;
+		int n2 = another.name != null ? another.name.length() : 0;
+		int min = Math.min(n1, n2);
+		for (int i = 0; i < min; i++) {
+			char c1 = name.charAt(i);
+			char c2 = another.name.charAt(i);
+			if (c1 != c2) {
+				c1 = Character.toUpperCase(c1);
+				c2 = Character.toUpperCase(c2);
+				if (c1 != c2) {
+					c1 = Character.toLowerCase(c1);
+					c2 = Character.toLowerCase(c2);
+					if (c1 != c2) {
+						return c1 - c2;
+					}
+				}
+			}
+		}
+		return n1 - n2;
+	}
 
 	/**
 	 * Prepare the parameters list.
@@ -241,6 +265,10 @@ public class Command {
 	private void prepareParameters() {
 		Matcher m = Constants.PARAMETERS.matcher(command);
 		String temp;
+		passwords = 0;
+		if (parameters.size() > 0) {
+			parameters.clear();
+		}
 		while (m.find()) {
 			temp = Utilities.getParameterName(m.group());
 			if (Constants.PASSWORD.equals(temp)) {
@@ -301,6 +329,11 @@ public class Command {
 	 */
 	public boolean havePassword() {
 		return passwords > 0;
+	}
+
+	@Override
+	public Object clone(){
+		return new Command(name + " (2)", command, description);
 	}
 
 }

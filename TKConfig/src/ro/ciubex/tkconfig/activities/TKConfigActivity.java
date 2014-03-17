@@ -26,6 +26,7 @@ import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.Constants;
 import ro.ciubex.tkconfig.models.GpsContact;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -136,15 +137,18 @@ public class TKConfigActivity extends BaseActivity {
 							onMenuItemSendSMS(position);
 							break;
 						case 1:
-							onMenuItemEdit(position);
+							onMenuItemDuplicate(position);
 							break;
 						case 2:
-							onMenuItemEditParams(position);
+							onMenuItemEdit(position);
 							break;
 						case 3:
-							onMenuItemAdd();
+							onMenuItemEditParams(position);
 							break;
 						case 4:
+							onMenuItemAdd();
+							break;
+						case 5:
 							onMenuItemDelete(position);
 							break;
 						}
@@ -307,6 +311,23 @@ public class TKConfigActivity extends BaseActivity {
 			} else {
 				showSendSMSConfirmation(command);
 			}
+		}
+	}
+
+	/**
+	 * Duplicate an existing command.
+	 * 
+	 * @param position
+	 *            The position of existing command.
+	 */
+	private void onMenuItemDuplicate(int position) {
+		Command command = (Command) adapter.getItem(position);
+		if (command != null) {
+			app.showProgressDialog(this, R.string.please_wait);
+			Command copy = (Command) command.clone();
+			app.getCommands().add(copy);
+			app.commandsSave();
+			reloadAdapter();
 		}
 	}
 
@@ -523,9 +544,11 @@ public class TKConfigActivity extends BaseActivity {
 	 */
 	private void startBrowserWithPage(int urlResourceId) {
 		String url = app.getString(urlResourceId);
-		Intent i = new Intent(Intent.ACTION_VIEW);
-		i.setData(Uri.parse(url));
-		startActivity(i);
+		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		try {
+			startActivity(i);
+		} catch (ActivityNotFoundException exception) {
+		}
 	}
 
 	/**
