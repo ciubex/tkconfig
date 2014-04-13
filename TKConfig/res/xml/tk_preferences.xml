@@ -11,6 +11,19 @@
             android:title="@string/gps_contacts" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other_settings" >
+        <ro.ciubex.tkconfig.forms.CustomEditTextPreference
+            android:defaultValue="@string/default_backup_file"
+            android:key="preferencesBackup"
+            android:persistent="false"
+            android:summary="@string/backup_desc"
+            android:title="@string/backup" />
+        <ro.ciubex.tkconfig.forms.CustomEditTextPreference
+            android:defaultValue="@string/default_backup_file"
+            android:key="preferencesRestore"
+            android:persistent="false"
+            android:summary="@string/restore_desc"
+            android:title="@string/restore" />
+
         <Preference
             android:key="resetCommands"
             android:persistent="false"

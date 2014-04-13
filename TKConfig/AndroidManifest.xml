@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ro.ciubex.tkconfig"
-    android:versionCode="15"
-    android:versionName="2.3.1" >
+    android:versionCode="16"
+    android:versionName="2.4" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="ro.ciubex.tkconfig.TKConfigApplication"

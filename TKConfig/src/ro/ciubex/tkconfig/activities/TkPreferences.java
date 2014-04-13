@@ -20,6 +20,10 @@ package ro.ciubex.tkconfig.activities;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
+import ro.ciubex.tkconfig.models.Constants;
+import ro.ciubex.tkconfig.tasks.DefaultAsyncTaskResult;
+import ro.ciubex.tkconfig.tasks.PreferencesFileUtilAsynkTask;
+import ro.ciubex.tkconfig.forms.CustomEditTextPreference;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,8 +37,14 @@ import android.preference.PreferenceActivity;
  * @author Claudiu Ciobotariu
  * 
  */
-public class TkPreferences extends PreferenceActivity {
+public class TkPreferences extends PreferenceActivity implements
+		CustomEditTextPreference.Listener,
+		PreferencesFileUtilAsynkTask.Responder {
 	private TKConfigApplication application;
+	private CustomEditTextPreference preferencesBackup;
+	private CustomEditTextPreference preferencesRestore;
+	private static final int PREF_BACKUP = 1;
+	private static final int PREF_RESTORE = 2;
 
 	/**
 	 * Method called when this preference activity is created
@@ -45,6 +55,7 @@ public class TkPreferences extends PreferenceActivity {
 		application = (TKConfigApplication) getApplication();
 		addPreferencesFromResource(R.xml.tk_preferences);
 		prepareCommands();
+		prepareAllCustomEditTextPreference();
 	}
 
 	/**
@@ -72,6 +83,20 @@ public class TkPreferences extends PreferenceActivity {
 	}
 
 	/**
+	 * Prepare some custom preferences to not be stored. The preference backup
+	 * and restore are actually used as buttons.
+	 */
+	private void prepareAllCustomEditTextPreference() {
+		String backupPath = getBackupPath();
+		preferencesBackup = (CustomEditTextPreference) findPreference("preferencesBackup");
+		preferencesBackup.setResultListener(this, PREF_BACKUP);
+		preferencesBackup.setText(backupPath);
+		preferencesRestore = (CustomEditTextPreference) findPreference("preferencesRestore");
+		preferencesRestore.setResultListener(this, PREF_RESTORE);
+		preferencesRestore.setText(backupPath);
+	}
+
+	/**
 	 * Show the GPS contact list.
 	 * 
 	 * @return Always will be returned TRUE.
@@ -80,6 +105,126 @@ public class TkPreferences extends PreferenceActivity {
 		Intent intent = new Intent(getBaseContext(), GpsContactActivity.class);
 		startActivityForResult(intent, 1);
 		return true;
+	}
+
+	/**
+	 * Method invoked when is started PreferencesFileUtilAsynkTask task
+	 * 
+	 * @param operationType
+	 *            The operation type: backup or restore
+	 */
+	@Override
+	public void startFileAsynkTask(
+			PreferencesFileUtilAsynkTask.Operation operationType) {
+		if (operationType == PreferencesFileUtilAsynkTask.Operation.RESTORE) {
+			application.showProgressDialog(this, R.string.backup_started);
+		} else {
+			application.showProgressDialog(this, R.string.restore_started);
+		}
+	}
+
+	/**
+	 * Method invoked when is ended PreferencesFileUtilAsynkTask task
+	 * 
+	 * @param operationType
+	 *            The operation type: backup or restore
+	 * @param result
+	 *            The process result
+	 */
+	@Override
+	public void endFileAsynkTask(
+			PreferencesFileUtilAsynkTask.Operation operationType,
+			DefaultAsyncTaskResult result) {
+		application.hideProgressDialog();
+		if (result.resultId == Constants.OK) {
+			application.showMessageInfo(this, result.resultMessage);
+			if (operationType == PreferencesFileUtilAsynkTask.Operation.RESTORE) {
+				// restartPreferencesActivity();
+			}
+		} else {
+			application.showMessageError(this, result.resultMessage);
+		}
+	}
+
+	/**
+	 * Method invoked when is pressed the positive (OK) button from a preference
+	 * edit dialog
+	 * 
+	 * @param resultId
+	 *            The id of pressed preference: PREF_RESTORE or PREF_BACKUP
+	 * @param value
+	 *            The full file and path of saved or loaded preferences
+	 */
+	@Override
+	public void onPositiveResult(int resultId, String value) {
+		if (resultId > 0) {
+			storeBackupPath(value);
+		}
+		if (resultId == PREF_RESTORE) {
+			preferencesBackup.setText(value);
+			onRestorePreferences(value);
+		} else if (resultId == PREF_BACKUP) {
+			preferencesRestore.setText(value);
+			onBackupPreferences(value);
+		}
+	}
+
+	/**
+	 * Persist into preferences the full file and path of saved or loaded
+	 * preferences
+	 * 
+	 * @param backupPath
+	 *            The full file and path of saved or loaded preferences
+	 */
+	private void storeBackupPath(String backupPath) {
+		application.setBackupPath(backupPath);
+	}
+
+	/**
+	 * Obtain the full file and path of saved or loaded preferences
+	 * 
+	 * @return The full file and path of saved or loaded preferences
+	 */
+	private String getBackupPath() {
+		return application.getBackupPath();
+	}
+
+	/**
+	 * Method invoked when is pressed the negative (Cancel) button from a
+	 * preference edit dialog
+	 * 
+	 * @param resultId
+	 *            The id of pressed preference: PREF_RESTORE or PREF_BACKUP
+	 * @param value
+	 *            The full file and path of saved or loaded preferences
+	 */
+	@Override
+	public void onNegativeResult(int resultId, String value) {
+
+	}
+
+	/**
+	 * Method invoked when is pressed the restore preference This will launch a
+	 * PreferencesFileUtilAsynkTask task to restore preferences
+	 * 
+	 * @param backupPath
+	 *            The full file and path from where should be loaded preferences
+	 */
+	private void onRestorePreferences(String backupPath) {
+		new PreferencesFileUtilAsynkTask(this, backupPath,
+				PreferencesFileUtilAsynkTask.Operation.RESTORE).execute();
+	}
+
+	/**
+	 * Method invoked when is pressed the back-up preference This will launch
+	 * PreferencesFileUtilAsynkTask task to backup preferences
+	 * 
+	 * @param backupPath
+	 *            The full file and path where should be stored preferences
+	 */
+	private void onBackupPreferences(String backupPath) {
+		new PreferencesFileUtilAsynkTask(this, backupPath,
+				PreferencesFileUtilAsynkTask.Operation.BACKUP).execute();
 	}
 
 	/**

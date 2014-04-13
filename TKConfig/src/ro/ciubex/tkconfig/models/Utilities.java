@@ -72,7 +72,7 @@ public class Utilities {
 				application.getString(R.string.time_format),
 				application.getDefaultLocale());
 		String date = "";
-		
+
 		if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR)
 				&& calendar.get(Calendar.DAY_OF_YEAR) == today
 						.get(Calendar.DAY_OF_YEAR)) {
@@ -85,5 +85,70 @@ public class Utilities {
 			date = dateFormatter.format(calendar.getTime());
 		}
 		return date + " " + timeFormatter.format(calendar.getTime());
+	}
+
+	/**
+	 * Parse a string to an integer. If the string could not be formated zero
+	 * will be returned.
+	 * 
+	 * @param value
+	 *            The string value to be parsed.
+	 * @return Parsed integer.
+	 */
+	public static int parseInt(String value) {
+		return parseInt(value, 0);
+	}
+
+	/**
+	 * Parse a string to an integer. If the string could not be formated will be
+	 * returned the defaultValue.
+	 * 
+	 * @param value
+	 *            The string value to be parsed.
+	 * @param defaultValue
+	 *            Default value returned if the string could not be parsed.
+	 * @return Parsed integer.
+	 */
+	public static int parseInt(String value, int defaultValue) {
+		int i = defaultValue;
+		try {
+			i = Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+		}
+		return i;
+	}
+
+	/**
+	 * Parse a string to a float number. If the string could not be parsed will
+	 * be returned the value zero.
+	 * 
+	 * @param value
+	 *            The string to be parsed.
+	 * @return Parsed float.
+	 */
+	public static float parseFloat(String value) {
+		float f = 0;
+		try {
+			f = Float.parseFloat(value);
+		} catch (NumberFormatException e) {
+		}
+		return f;
+	}
+
+	/**
+	 * Parse a string to a long number. If the string could not be parsed will
+	 * be returned the value zero.
+	 * 
+	 * @param value
+	 *            The string to be parsed.
+	 * @return Parsed long.
+	 */
+	public static long parseLong(String value) {
+		long l = 0;
+		try {
+			l = Long.parseLong(value);
+		} catch (NumberFormatException e) {
+		}
+		return l;
 	}
 }

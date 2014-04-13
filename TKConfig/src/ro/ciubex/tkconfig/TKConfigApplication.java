@@ -18,6 +18,8 @@
  */
 package ro.ciubex.tkconfig;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +40,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.widget.Toast;
@@ -64,6 +68,7 @@ public class TKConfigApplication extends Application {
 	private ContactChooseHandler contactChooseHandler;
 	private List<ContactModel> phoneContacts;
 	private Uri sendFolderUri;
+	private String defaultBackupPath;
 
 	/**
 	 * This method is invoked when the application is created.
@@ -707,6 +712,73 @@ public class TKConfigApplication extends Application {
 	 */
 	public void setPhoneContacts(List<ContactModel> phoneContacts) {
 		this.phoneContacts = phoneContacts;
+	}
+
+	/**
+	 * Obtain the application shared preferences.
+	 * 
+	 * @return The application shared preferences.
+	 */
+	public SharedPreferences getSharedPreferences() {
+		return sharedPreferences;
+	}
+
+	
+
+	/**
+	 * Retrieve default backup path for exported application preferences file.
+	 * 
+	 * @return Default backup path.
+	 */
+	public String getDefaultBackupPath() {
+		if (defaultBackupPath == null) {
+			File defaultDir = Environment.getExternalStorageDirectory();
+			if (defaultDir != null && defaultDir.exists()) {
+				try {
+					defaultBackupPath = defaultDir.getCanonicalPath()
+							+ File.pathSeparator;
+				} catch (IOException e) {
+					defaultBackupPath = "";
+				}
+			} else {
+				defaultBackupPath = "";
+			}
+		}
+		return defaultBackupPath;
+	}
+
+	/**
+	 * Retrieve the importing path for the exported application preferences
+	 * file.
+	 * 
+	 * @return Importing backup path.
+	 */
+	public String getBackupPath() {
+		String state = Environment.getExternalStorageState();
+		String defaultPath = "";
+		if (Environment.MEDIA_MOUNTED.equals(state)
+				|| Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			defaultPath += Environment.getExternalStorageDirectory().getPath()
+					+ File.separator;
+		} else {
+			defaultPath += getString(R.string.default_backup_dir);
+		}
+		defaultPath += getString(R.string.default_backup_file);
+		return sharedPreferences.getString("backupPath", defaultPath);
+	}
+
+	/**
+	 * Store the backup path for exporting or importing application preferences
+	 * file.
+	 * 
+	 * @param backupPath
+	 *            Path used for exporting or importing application preferences
+	 *            file.
+	 */
+	public void setBackupPath(String backupPath) {
+		Editor editor = sharedPreferences.edit();
+		editor.putString("backupPath", backupPath);
+		editor.commit();
 	}
 
 }

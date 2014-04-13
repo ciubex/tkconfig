@@ -124,6 +124,24 @@
     <string name="contact_image">[ ]</string>
     <string name="filter">Filter</string>
     <string name="filtering">Filtering&#8230;</string>
+    
+    <!-- Import / export -->
+    <string name="backup_settings">Backup settings</string>
+    <string name="backup">Backup</string>
+    <string name="backup_desc">Backup application settings</string>
+    <string name="restore">Restore</string>
+    <string name="restore_desc">Restore application settings</string>
+    <string name="default_backup_dir">/mnt/sdcard/</string>
+    <string name="default_backup_file">tkconfig.prefs</string>
+    <string name="file_name_missing">You have not specitied a file name for the operation!</string>
+    <string name="backup_started">Preferences backup started!</string>
+    <string name="backup_success">Successfully backing to: %s!</string>
+    <string name="backup_exception">Exception ocured during backup: %1$s\nException: %2$s\nMessage: %3$s</string>
+    <string name="create_folders_error">Cannot create parent folders: %s</string>
+    <string name="restore_file_not_exist">Restore file: %s don\'t exist!\nCreate it first!</string>
+    <string name="restore_started">Preferences restored started!</string>
+    <string name="restore_success">Successfully restored from: %s!\nYou should restart the application to use restored values.</string>
+    <string name="restore_exception">Exception ocured during restore:  %1$s Exception: %2$s Message: %3$s</string>
 
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>
@@ -147,11 +165,16 @@
 		The user can define own parameters and commands, can be modified or deleted existing commands also. Each parameter value is saved into application preferences and are available when it\'s needed.<br/>
 		<br/>
 		When the message is sent to the GPS tracker the parameters are replaced with the specified values.<br/>
+		<br/>
+		Starting with version 2.4 is possible to backup and restore all commands and settings. Is indicated a restart after a restore. The backup file is a text file so be careful with the passwords because are stored on <b>plain text</b>.<br/>
         <br/>
         Thank you for using this application!<br/>
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.4<br/>
+        - Added support to backup and restore commands and all settings.<br/>
+        <br/>
         Version 2.3<br/>
         - Commands are sorted alphabetically.<br/>
         - Added support to duplicate an existing command.<br/>
