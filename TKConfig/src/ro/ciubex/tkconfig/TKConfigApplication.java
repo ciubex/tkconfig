@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.Constants;
@@ -45,6 +43,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -55,8 +54,7 @@ import android.widget.Toast;
  * 
  */
 public class TKConfigApplication extends Application {
-	private static Logger logger = Logger.getLogger(TKConfigApplication.class
-			.getName());
+	private final static String TAG = TKConfigApplication.class.getName();
 	private ProgressDialog progressDialog;
 	private List<Command> commands;
 	private List<History> histories;
@@ -78,7 +76,7 @@ public class TKConfigApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		logger.log(Level.INFO, "TKConfigApplication started!");
+		Log.i(TAG, "TKConfigApplication started!");
 		commands = new ArrayList<Command>() {
 			private static final long serialVersionUID = 8883327862834322486L;
 
@@ -428,7 +426,7 @@ public class TKConfigApplication extends Application {
 			String message) {
 		addHistory(new History(phoneNumber, message));
 		historiesSave();
-		logger.log(Level.INFO, "Send to: " + phoneNumber + " the SMS:\""
+		Log.i(TAG, "Send to: " + phoneNumber + " the SMS:\""
 				+ message + "\"");
 		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
 				context, clazz), 0);
@@ -456,8 +454,7 @@ public class TKConfigApplication extends Application {
 				this.getContentResolver().insert(sendFolderUri, values);
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					"Save message to the send folder:" + e.getMessage());
+			Log.e(TAG, "Save message to the send folder:" + e.getMessage());
 			e.printStackTrace();
 		}
 	}

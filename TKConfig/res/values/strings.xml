@@ -172,6 +172,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.5<br/>
+        - Fixed an issue related with commands exporting.<br/>
+        <br/>
         Version 2.4<br/>
         - Added support to backup and restore commands and all settings.<br/>
         <br/>

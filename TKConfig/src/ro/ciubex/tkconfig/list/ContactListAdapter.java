@@ -187,6 +187,10 @@ public class ContactListAdapter extends BaseAdapter implements SectionIndexer {
 				viewHolder = initSeparatorView(view);
 				view.setTag(viewHolder);
 				break;
+			case UNUSED:
+				break;
+			default:
+				break;
 			}
 		}
 		if (viewHolder != null) {
@@ -196,6 +200,10 @@ public class ContactListAdapter extends BaseAdapter implements SectionIndexer {
 				break;
 			case SEPARATOR:
 				prepareSeparatorView(viewHolder, "" + item.sectionChar);
+				break;
+			case UNUSED:
+				break;
+			default:
 				break;
 			}
 		}

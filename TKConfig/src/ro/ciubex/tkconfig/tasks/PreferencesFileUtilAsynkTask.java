@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
@@ -38,6 +36,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * @author Claudiu Ciobotariu
@@ -45,8 +44,8 @@ import android.os.AsyncTask;
  */
 public class PreferencesFileUtilAsynkTask extends
 		AsyncTask<Void, Void, DefaultAsyncTaskResult> {
-	private static Logger logger = Logger
-			.getLogger(PreferencesFileUtilAsynkTask.class.getName());
+	private final static String TAG = PreferencesFileUtilAsynkTask.class
+			.getName();
 
 	/**
 	 * The listener should implement this interface
@@ -139,16 +138,25 @@ public class PreferencesFileUtilAsynkTask extends
 	 *            File which should be created with exported preferences
 	 * @return True if parent folders exist or are created successfully
 	 */
-	private boolean createParentFolders(File file) {
-		boolean result = false;
-		if (file != null) {
-			if (file.getParentFile().exists()) {
-				result = true;
-			} else {
-				result = file.getParentFile().mkdirs();
+	private boolean createParentFolders(File directory) {
+		if (directory != null) {
+			if (directory.exists()) {
+				return true;
+			} else if (directory.mkdir()) {
+				return true;
 			}
+			File canonDir = null;
+			try {
+				canonDir = directory.getCanonicalFile();
+			} catch (IOException e) {
+				return false;
+			}
+			File parentDir = canonDir.getParentFile();
+			return (parentDir != null
+					&& (createParentFolders(parentDir) || parentDir.exists()) && canonDir
+						.mkdir());
 		}
-		return result;
+		return false;
 	}
 
 	/**
@@ -166,7 +174,7 @@ public class PreferencesFileUtilAsynkTask extends
 		File outFile;
 		try {
 			outFile = new File(externalFileName);
-			if (createParentFolders(outFile)) {
+			if (createParentFolders(outFile.getParentFile())) {
 				fos = new FileOutputStream(outFile);
 				SharedPreferences prefs = app.getSharedPreferences();
 				Map<String, ?> keys = prefs.getAll();
@@ -192,17 +200,17 @@ public class PreferencesFileUtilAsynkTask extends
 			result.resultMessage = app.getString(R.string.backup_exception,
 					externalFileName, "IllegalArgumentException",
 					e.getMessage());
-			logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+			Log.e(TAG, "Exception: " + e.getMessage(), e);
 		} catch (FileNotFoundException e) {
 			result.resultId = Constants.ERROR;
 			result.resultMessage = app.getString(R.string.backup_exception,
 					externalFileName, "FileNotFoundException", e.getMessage());
-			logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+			Log.e(TAG, "Exception: " + e.getMessage(), e);
 		} catch (IOException e) {
 			result.resultId = Constants.ERROR;
 			result.resultMessage = app.getString(R.string.backup_exception,
 					externalFileName, "IOException", e.getMessage());
-			logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+			Log.e(TAG, "Exception: " + e.getMessage(), e);
 		} finally {
 			if (fos != null) {
 				try {
@@ -212,7 +220,7 @@ public class PreferencesFileUtilAsynkTask extends
 					result.resultMessage = app.getString(
 							R.string.backup_exception, externalFileName,
 							"Closing IOException", e.getMessage());
-					logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+					Log.e(TAG, "Exception: " + e.getMessage(), e);
 				}
 			}
 		}
@@ -230,12 +238,12 @@ public class PreferencesFileUtilAsynkTask extends
 		TKConfigApplication app = (TKConfigApplication) responder
 				.getApplication();
 		FileInputStream inFile = null;
+		BufferedReader reader = null;
 		try {
 			File f = new File(externalFileName);
 			if (f.exists()) {
 				inFile = new FileInputStream(f);
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(inFile));
+				reader = new BufferedReader(new InputStreamReader(inFile));
 				SharedPreferences prefs = app.getSharedPreferences();
 				Editor editor = prefs.edit();
 				String line;
@@ -256,13 +264,20 @@ public class PreferencesFileUtilAsynkTask extends
 			result.resultId = Constants.ERROR;
 			result.resultMessage = app.getString(R.string.restore_exception,
 					externalFileName, "FileNotFoundException", e.getMessage());
-			logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+			Log.e(TAG, "Exception: " + e.getMessage(), e);
 		} catch (IOException e) {
 			result.resultId = Constants.ERROR;
 			result.resultMessage = app.getString(R.string.restore_exception,
 					externalFileName, "IOException", e.getMessage());
-			logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+			Log.e(TAG, "Exception: " + e.getMessage(), e);
 		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					Log.e(TAG, "Exception: " + e.getMessage(), e);
+				}
+			}
 			if (inFile != null) {
 				try {
 					inFile.close();
@@ -271,7 +286,7 @@ public class PreferencesFileUtilAsynkTask extends
 					result.resultMessage = app.getString(
 							R.string.restore_exception, externalFileName,
 							"Closing IOException", e.getMessage());
-					logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
+					Log.e(TAG, "Exception: " + e.getMessage(), e);
 				}
 			}
 		}
