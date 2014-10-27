@@ -71,6 +71,7 @@
     <string name="sms_command_send_many">%s commands were send.</string>
 
     <!-- Parameter editor -->
+    <string name="param_list_title">Parameters:</string>
     <string name="edit_parameter">Edit parameter:</string>
     <string name="edit_parameter_with_name">Edit parameter: \"%s\"</string>
     <string name="parameter">parameter</string>

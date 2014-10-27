@@ -200,18 +200,17 @@ public class BaseActivity extends Activity {
 	 */
 	protected void showMessageDialog(int titleStringId, String message,
 			final int messageId, final Object anObject) {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-		alertDialog.setIcon(android.R.drawable.ic_dialog_info);
-		alertDialog.setTitle(getString(titleStringId));
-		alertDialog.setMessage(message);
-
-		AlertDialog alert = alertDialog.create();
-		alert.setButton(getString(R.string.ok),
+		new AlertDialog.Builder(this)
+		.setTitle(getString(titleStringId))
+		.setMessage(message)
+		.setIcon(android.R.drawable.ic_dialog_info)
+		.setNeutralButton(R.string.ok,
 				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
+
+					public void onClick(DialogInterface dialog,
+							int whichButton) {
 						onMessageOk(messageId, anObject);
 					}
-				});
-		alert.show();
+				}).show();
 	}
 }

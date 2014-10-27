@@ -22,12 +22,14 @@ import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.dialogs.EditorDialog;
 import ro.ciubex.tkconfig.dialogs.ParameterEditor;
 import ro.ciubex.tkconfig.list.CommandListAdapter;
+import ro.ciubex.tkconfig.list.ParamListAdapter;
 import ro.ciubex.tkconfig.models.Command;
-import ro.ciubex.tkconfig.models.Constants;
 import ro.ciubex.tkconfig.models.GpsContact;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,6 +57,10 @@ public class TKConfigActivity extends BaseActivity {
 
 	private static final int REQUEST_CODE_SETTINGS = 0;
 	private static final int REQUEST_CODE_ABOUT = 1;
+
+	private enum METHOD {
+		NOTHING, SEND_SMS
+	}
 
 	/**
 	 * The method invoked when the activity is creating
@@ -178,12 +184,71 @@ public class TKConfigActivity extends BaseActivity {
 		Command command = (Command) adapter.getItem(position);
 		if (command.hasParameters()) {
 			app.prepareCommandParameters(command);
-			doEditParameter(command, 0, false);
+			showParameterList(command, METHOD.NOTHING);
 		} else {
 			showMessageDialog(R.string.information, app.getString(command
 					.havePassword() ? R.string.no_params_to_edit_just_password
 					: R.string.no_params_to_edit, command.getName()),
 					NO_PARAMS_TO_EDIT, command);
+		}
+	}
+
+	/**
+	 * Display a list with command parameters to edit them and at the end is
+	 * called the closedParameterList method.
+	 * 
+	 * @param command
+	 *            The command to edit parameters.
+	 * @param methodId
+	 *            The method id used on the closedParameterList.
+	 */
+	private void showParameterList(final Command command, final METHOD methodId) {
+		final Context context = this;
+		final ParamListAdapter adapter = new ParamListAdapter(context, command);
+		new AlertDialog.Builder(this).setTitle(R.string.param_list_title)
+				.setAdapter(adapter, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String paramName = adapter.getItem(which);
+						ParameterEditor ped = new ParameterEditor(context,
+								command, command
+										.getParameterPosition(paramName));
+						ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+							@Override
+							public void onDismiss(DialogInterface dialog) {
+								showParameterList(command, methodId);
+							}
+						});
+						ped.show();
+					}
+
+				}).setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						closedParameterList(command, methodId);
+					}
+				}).create().show();
+	}
+
+	/**
+	 * Method invoked when the parameters list is closed. Based on the method id
+	 * is invoked another method.
+	 * 
+	 * @param command
+	 *            The edited command.
+	 * @param methodId
+	 *            The method id to be invoked.
+	 */
+	private void closedParameterList(Command command, METHOD methodId) {
+		if (command.hasParametersModified()) {
+			app.saveCommandParameters(command);
+			command.setParametersModified(false);
+		}
+		if (METHOD.SEND_SMS == methodId) {
+			showSendSMSConfirmation(command);
 		}
 	}
 
@@ -233,7 +298,7 @@ public class TKConfigActivity extends BaseActivity {
 				doSendSMS((Command) anObject);
 				break;
 			case CONFIRM_ID_PARAMETERS:
-				doPrepareSMSCommand((Command) anObject);
+				showParameterList((Command) anObject, METHOD.SEND_SMS);
 				break;
 			case CONFIRM_ID_DONATE:
 				startBrowserWithPage(R.string.donate_url);
@@ -257,43 +322,6 @@ public class TKConfigActivity extends BaseActivity {
 		app.getCommands().remove(command);
 		app.commandsSave();
 		reloadAdapter();
-	}
-
-	/**
-	 * This method is to edit a command parameters.
-	 * 
-	 * @param command
-	 *            The command to be edited.
-	 * @param parameterPosition
-	 *            The position of parameter to be edited.
-	 * @param editPasswords
-	 *            If true, then edit password too.
-	 */
-	private void doEditParameter(final Command command,
-			final int parameterPosition, final boolean editPasswords) {
-		String temp;
-		if (parameterPosition < command.getParametersSize()) {
-			temp = command.getParameterName(parameterPosition);
-			if (Constants.PASSWORD.equals(temp) && !editPasswords) {
-				doEditParameter(command, parameterPosition + 1, editPasswords);
-			} else {
-				ParameterEditor ped = new ParameterEditor(this, command,
-						parameterPosition);
-				ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						// move to next parameter
-						doEditParameter(command, parameterPosition + 1,
-								editPasswords);
-					}
-				});
-				ped.show();
-			}
-		} else if (command.hasParametersModified()) {
-			app.saveCommandParameters(command);
-			command.setParametersModified(false);
-		}
 	}
 
 	/**
@@ -343,53 +371,6 @@ public class TKConfigActivity extends BaseActivity {
 				app.getString(R.string.sms_prepare_message,
 						command.getParametersListToBeShow()),
 				CONFIRM_ID_PARAMETERS, command);
-	}
-
-	/**
-	 * After the user is informed about the parameters he will be asked to edit
-	 * each parameter.
-	 * 
-	 * @param command
-	 *            The command to be prepared.
-	 */
-	private void doPrepareSMSCommand(Command command) {
-		prepareCommandParameter(command, 0);
-	}
-
-	/**
-	 * Method used to prepare parameters from the specified command.
-	 * 
-	 * @param command
-	 *            The command to be prepared.
-	 * @param parameterPosition
-	 *            The parameter position to be prepared.
-	 */
-	public void prepareCommandParameter(final Command command,
-			final int parameterPosition) {
-		String temp = command.getParameterName(parameterPosition);
-		if (Constants.PASSWORD.equals(temp)) {
-			prepareCommandParameter(command, parameterPosition + 1);
-		} else {
-			if (parameterPosition < command.getParametersSize()) {
-				ParameterEditor ped = new ParameterEditor(this, command,
-						parameterPosition);
-				ped.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						// move to next parameter
-						prepareCommandParameter(command, parameterPosition + 1);
-					}
-				});
-				ped.show();
-			} else {
-				if (command.hasParametersModified()) {
-					app.saveCommandParameters(command);
-					command.setParametersModified(false);
-				}
-				showSendSMSConfirmation(command);
-			}
-		}
 	}
 
 	/**

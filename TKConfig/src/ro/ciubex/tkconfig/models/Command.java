@@ -94,14 +94,6 @@ public class Command implements Comparable<Command> {
 		return command.indexOf("?") > -1;
 	}
 
-	public Map<String, Parameter> getAvailableParameters() {
-		return availableParameters;
-	}
-
-	public boolean addToAvailableParameters(Parameter parameter) {
-		return availableParameters.put(parameter.getName(), parameter) != null;
-	}
-
 	/**
 	 * Set the value for a specified parameter.
 	 * 
@@ -235,7 +227,7 @@ public class Command implements Comparable<Command> {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public int compareTo(Command another) {
 		int n1 = name != null ? name.length() : 0;
@@ -332,8 +324,26 @@ public class Command implements Comparable<Command> {
 	}
 
 	@Override
-	public Object clone(){
+	public Object clone() {
 		return new Command(name + " (2)", command, description);
+	}
+
+	/**
+	 * Obtain the position of the parameter.
+	 * 
+	 * @param parameterName
+	 *            The parameter name.
+	 * @return The position or -1 if the parameter does not exist.
+	 */
+	public int getParameterPosition(String parameterName) {
+		int k = 0;
+		for (String parameter : parameters) {
+			if (parameter.equals(parameterName)) {
+				return k;
+			}
+			k++;
+		}
+		return -1;
 	}
 
 }
