@@ -2,9 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical" >
 
     <TextView
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="?android:attr/textColorPrimary" 
         android:id="@+id/firstItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,6 +15,8 @@
         android:text="@string/loading_wait" />
 
     <TextView
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorSecondary" 
         android:id="@+id/secondItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

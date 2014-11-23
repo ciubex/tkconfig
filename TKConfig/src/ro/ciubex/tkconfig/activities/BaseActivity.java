@@ -68,6 +68,10 @@ public class BaseActivity extends Activity {
 		if (showMenu) {
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(menuId, menu);
+			if (app.isProPresent()) {
+				MenuItem item_donate = menu.findItem(R.id.menu_donate);
+				item_donate.setVisible(false);
+			}
 			processed = true;
 		}
 		return processed;

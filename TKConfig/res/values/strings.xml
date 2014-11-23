@@ -75,6 +75,7 @@
     <string name="edit_parameter">Edit parameter:</string>
     <string name="edit_parameter_with_name">Edit parameter: \"%s\"</string>
     <string name="parameter">parameter</string>
+    <string name="undefined">undefined</string>
 
     <!-- History list view -->
     <string name="history">History</string>
@@ -117,7 +118,7 @@
     <string name="contact_editor_edit">Edit a GPS contact</string>
     <string name="remove_gps_contact_question">Do you want to remove the contact:\n\"%s\"?</string>
     <string name="points">&#8230;</string>
-    
+
     <!-- Phone contacts -->
     <string name="contacts_list">Contacts list</string>
     <string name="no_phone_contacts">You don\'t have contacts</string>
@@ -125,7 +126,7 @@
     <string name="contact_image">[ ]</string>
     <string name="filter">Filter</string>
     <string name="filtering">Filtering&#8230;</string>
-    
+
     <!-- Import / export -->
     <string name="backup_settings">Backup settings</string>
     <string name="backup">Backup</string>
@@ -146,8 +147,8 @@
 
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>
-    <string name="donate_message">If you appreciate this application, please do a donation!\nPressing YES button, you will be sent using your default browser to a PayPal donnation page.\nThank you for using this application!</string>
-    <string name="donate_url"><Data><![CDATA[https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=claudiu_ciobotariu%40yahoo%2ecom&lc=RO&item_name=Ciubex&item_number=TKConfig%20Donation&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted]]></Data></string>
+    <string name="donate_message">If you appreciate this application, please do a donation buying TKConfig PRO!\nPressing YES button, you will be sent to TKConfig PRO from Google Play Store.\nThank you for using this application!</string>
+    <string name="donate_url"><Data><![CDATA[https://play.google.com/store/apps/details?id=ro.ciubex.tkconfigpro]]></Data></string>
 
     <!-- About -->
     <string name="about">About</string>
@@ -173,6 +174,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.6<br/>
+        - Changes on the parameter editor. The parameters appear as a list.<br/>
+        <br/>
         Version 2.5<br/>
         - Fixed an issue related with commands exporting.<br/>
         <br/>

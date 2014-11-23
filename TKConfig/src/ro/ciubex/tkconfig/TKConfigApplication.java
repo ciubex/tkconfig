@@ -39,6 +39,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -145,7 +146,7 @@ public class TKConfigApplication extends Application {
 				"Send SMS tracker+password to the unit, and it will reply \"tracker ok !\" and switch to \"track\" mode."));
 		commands.add(new Command(
 				"Geo-fence",
-				"stockade?password? ?latitude1?,?longitude1?; ?latitude2?,?longitude2?",
+				"stockade?password? ?longitudeE/W?,?latitudeN/S?; ?longitudeE/W?,?latitudeN/S?",
 				"Set up a geo-fence for the unit to restrict its movements within a district. The unit will send the message to the authorized numbers when it breaches the district."));
 		commands.add(new Command("Cancel Geo-fence", "nostockade?password?",
 				"Send SMS nostockade+password to deactivate the Geo-fence function."));
@@ -178,6 +179,83 @@ public class TKConfigApplication extends Application {
 				"Set APN",
 				"apn?password? ?apn-name?",
 				"Send SMS apn+password+space+specify apn. If setup successful, the tracker will reply SMS \"APN ok\"."));
+		// TK102 b
+		commands.add(new Command(
+				"Low battery alert ON",
+				"lowbattery?password? on",
+				"TK102-2: Tracker will send SMS \"low battery+latitude/longitude\" to authorized numbers 2 times in total in 15 minutes interval when voltage of battery is going to be about 3.55V"));
+		commands.add(new Command(
+				"Low battery alert OFF",
+				"lowbattery?password? off",
+				"TK102-2: Tracker will stop send SMS \"low battery\" allerts."));
+		commands.add(new Command(
+				"State checking",
+				"check?password?",
+				"TK102-2: Check tracker status for GSM, GPS, GPRS and battery."));
+		commands.add(new Command(
+				"Version Checking",
+				"version?password?",
+				"TK102-2: Check tracker version."));
+		commands.add(new Command(
+				"Motion sensor ON",
+				"shake?password? ?sensitive?",
+				"TK102-2: This command will enable shake sensor to send alerts when the tracker is shaked, the ?sensitive? parameter should have a value between 1, for the least sensitive degree and 10 for the most sensitive degree."));
+		commands.add(new Command(
+				"SD storing data ON",
+				"sdlog?password? 1",
+				"TK102-2: Activate the function of storing data in SD card."));
+		commands.add(new Command(
+				"SD storing data OFF",
+				"sdlog?password? 0",
+				"TK102-2: Deactivate the function of storing data in SD card."));
+		commands.add(new Command(
+				"SD send data to the GPRS server ON",
+				"readsd?password? 1",
+				"TK102-2: Activate the function to send data from the SD card to the GPRS server."));
+		commands.add(new Command(
+				"SD send data to the GPRS server OFF",
+				"readsd?password? 0",
+				"TK102-2: Deactivate the function to send data from the SD card to the GPRS server."));
+		commands.add(new Command(
+				"SMS position link",
+				"smslink?password?",
+				"TK102-2: Turn tracker messages with the tracker positions as links."));
+		commands.add(new Command(
+				"SMS position text",
+				"smstext?password?",
+				"TK102-2: Turn tracker back to text messages, default format messages."));
+		commands.add(new Command(
+				"SMS link once",
+				"smslinkone?password?",
+				"TK102-2: Tracker will send one messages with the position as a link."));
+		commands.add(new Command(
+				"Set APN user",
+				"apnuser?password? ?username?",
+				"TK102-2: Set the APN user name."));
+		commands.add(new Command(
+				"Set APN password",
+				"apnuser?password? ?apnpassword?",
+				"TK102-2: Set the APN password."));
+		commands.add(new Command(
+				"Set Time Zone",
+				"time zone?password? ?timezone?",
+				"TK102-2: Set the tracker reports time zone."));
+		commands.add(new Command(
+				"Tlimit function ON",
+				"tlimit?password? ?distance?",
+				"TK102-2: Activate the limited distance for autor reporting mode (t030s***n...). Distance can be a numeric value between 50 and 5999 meters."));
+		commands.add(new Command(
+				"Tlimit function OFF",
+				"tlimit?password? 0",
+				"TK102-2: Deactivate Tlimit function."));
+		commands.add(new Command(
+				"Set GPRS MODE-UDP",
+				"gprsmode?password? 1",
+				"TK102-2: Set GPRS MODE to UDP protocol."));
+		commands.add(new Command(
+				"Set GPRS MODE-TCP",
+				"gprsmode?password? 1",
+				"TK102-2: Set GPRS MODE to TCP protocol. (default protocol)"));
 	}
 
 	/**
@@ -426,8 +504,7 @@ public class TKConfigApplication extends Application {
 			String message) {
 		addHistory(new History(phoneNumber, message));
 		historiesSave();
-		Log.i(TAG, "Send to: " + phoneNumber + " the SMS:\""
-				+ message + "\"");
+		Log.i(TAG, "Send to: " + phoneNumber + " the SMS:\"" + message + "\"");
 		PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(
 				context, clazz), 0);
 		smsManager.sendTextMessage(phoneNumber, null, message, pi, null);
@@ -720,8 +797,6 @@ public class TKConfigApplication extends Application {
 		return sharedPreferences;
 	}
 
-	
-
 	/**
 	 * Retrieve default backup path for exported application preferences file.
 	 * 
@@ -776,6 +851,24 @@ public class TKConfigApplication extends Application {
 		Editor editor = sharedPreferences.edit();
 		editor.putString("backupPath", backupPath);
 		editor.commit();
+	}
+
+	/**
+	 * Check for pro version.
+	 * 
+	 * @return True if pro version exist.
+	 */
+	public boolean isProPresent() {
+		PackageManager pm = getPackageManager();
+		boolean success = false;
+		try {
+			success = (PackageManager.SIGNATURE_MATCH == pm.checkSignatures(
+					this.getPackageName(), "ro.ciubex.tkconfigpro"));
+			Log.d(TAG, "isProPresent: " + success);
+		} catch (Exception e) {
+			Log.e(TAG, "isProPresent: " + e.getMessage(), e);
+		}
+		return success;
 	}
 
 }

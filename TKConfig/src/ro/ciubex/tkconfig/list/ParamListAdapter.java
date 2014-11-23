@@ -150,8 +150,10 @@ public class ParamListAdapter extends BaseAdapter {
 		if (parameter != null) {
 			viewHolder.firstItemText.setText(parameter);
 			String value = mCommand.getParameterValue(parameter);
-			if (value != null) {
+			if (value != null && !parameter.equals(value)) {
 				viewHolder.secondItemText.setText(value);
+			} else {
+				viewHolder.secondItemText.setText(R.string.undefined);
 			}
 		}
 	}

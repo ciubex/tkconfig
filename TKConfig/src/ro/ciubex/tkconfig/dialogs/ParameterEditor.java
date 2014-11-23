@@ -67,7 +67,7 @@ public class ParameterEditor extends BaseDialog {
 		if (command != null) {
 			String temp = command.getParameterValue(parameterName);
 			editParameter.setHint(parameterName);
-			if (temp != null) {
+			if (temp != null && !parameterName.equals(temp)) {
 				editParameter.setText(temp);
 			}
 		}

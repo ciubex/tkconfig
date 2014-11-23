@@ -6,7 +6,7 @@
         android:title="@string/menu_add"/>
     <item
         android:id="@+id/menu_donate"
-        android:icon="@drawable/paypal_icon"
+        android:icon="@drawable/ic_key"
         android:title="@string/menu_donate"/>
     <item
         android:id="@+id/menu_settings"
