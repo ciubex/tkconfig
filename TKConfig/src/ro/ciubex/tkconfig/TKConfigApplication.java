@@ -254,7 +254,7 @@ public class TKConfigApplication extends Application {
 				"TK102-2: Set GPRS MODE to UDP protocol."));
 		commands.add(new Command(
 				"Set GPRS MODE-TCP",
-				"gprsmode?password? 1",
+				"gprsmode?password? 0",
 				"TK102-2: Set GPRS MODE to TCP protocol. (default protocol)"));
 	}
 
