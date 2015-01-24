@@ -29,7 +29,7 @@
     <string name="menu_add">Add</string>
 
     <!-- Context menu -->
-    <string name="item_edit">Choose:</string>
+    <string name="item_edit">Command: %s</string>
 
     <string-array name="menu_list">
         <item>Send SMS</item>
@@ -168,12 +168,14 @@
 		<br/>
 		When the message is sent to the GPS tracker the parameters are replaced with the specified values.<br/>
 		<br/>
-		Starting with version 2.4 is possible to backup and restore all commands and settings. Is indicated a restart after a restore. The backup file is a text file so be careful with the passwords because are stored on <b>plain text</b>.<br/>
+		THe user can backup and restore all commands and settings. Is indicated a restart after a restore. The backup file is a text file so be careful with the passwords because are stored on <b>plain text</b>.<br/>
         <br/>
         Thank you for using this application!<br/>
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.8<br/>
+        - UI changes to allow settings from activity bar.<br/>
         Version 2.6<br/>
         - Changes on the parameter editor. The parameters appear as a list.<br/>
         <br/>

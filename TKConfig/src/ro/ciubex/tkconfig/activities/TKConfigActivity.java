@@ -134,9 +134,11 @@ public class TKConfigActivity extends BaseActivity {
 	 */
 	private void showItemDialogMenu(final int position) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.item_edit);
+		Command command = (Command) adapter.getItem(position);
+		builder.setTitle(getString(R.string.item_edit, command.getName()));
 		builder.setItems(R.array.menu_list,
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 						case 0:

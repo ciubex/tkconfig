@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ro.ciubex.tkconfig"
-    android:versionCode="20"
-    android:versionName="2.7.1" >
+    android:versionCode="21"
+    android:versionName="2.8" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.SEND_SMS" />

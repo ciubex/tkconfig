@@ -6,7 +6,7 @@
 
     <ro.ciubex.tkconfig.forms.CustomEditText
         android:id="@+id/contacts_filter_box"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/filter" />
 
@@ -14,8 +14,10 @@
         android:id="@+id/contacts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fastScrollEnabled="false" />
-    
+        android:background="@color/list_background"
+        android:fastScrollEnabled="false"
+        android:listSelector="@drawable/list_selector" />
+
     <TextView
         android:id="@+id/emptyListView"
         android:layout_width="wrap_content"

@@ -20,7 +20,7 @@ package ro.ciubex.tkconfig.activities;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ import android.view.MenuItem;
  * @author Claudiu Ciobotariu
  * 
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends ActionBarActivity {
 	protected TKConfigApplication app;
 	protected int menuId;
 	private boolean showMenu;

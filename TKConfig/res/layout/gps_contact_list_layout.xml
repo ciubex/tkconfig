@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <ListView
         android:id="@+id/gps_contact_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/list_background"
+        android:listSelector="@drawable/list_selector" />
 
     <TextView
         android:id="@+id/no_contacts"
@@ -15,4 +17,5 @@
         android:layout_height="wrap_content"
         android:text="@string/no_contacts"
         android:visibility="gone" />
+
 </LinearLayout>
