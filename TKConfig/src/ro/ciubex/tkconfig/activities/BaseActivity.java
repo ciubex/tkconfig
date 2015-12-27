@@ -205,7 +205,7 @@ public class BaseActivity extends ActionBarActivity {
 	protected void showMessageDialog(int titleStringId, String message,
 			final int messageId, final Object anObject) {
 		new AlertDialog.Builder(this)
-		.setTitle(getString(titleStringId))
+		.setTitle(titleStringId)
 		.setMessage(message)
 		.setIcon(android.R.drawable.ic_dialog_info)
 		.setNeutralButton(R.string.ok,

@@ -3,12 +3,17 @@
     android:summary="@string/settings_summary"
     android:title="@string/settings_title" >
 
-    <PreferenceCategory android:title="@string/general_settings" >
+    <PreferenceCategory android:title="@string/general_settings" android:key="generalSettings">
         <Preference
             android:key="gpsContacts"
             android:persistent="false"
             android:summary="@string/gps_contacts_desc"
             android:title="@string/gps_contacts" />
+        <Preference
+            android:key="requestPermissions"
+            android:persistent="false"
+            android:summary="@string/request_permissions_desc"
+            android:title="@string/request_permissions_title"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/other_settings" >
         <ro.ciubex.tkconfig.forms.CustomEditTextPreference

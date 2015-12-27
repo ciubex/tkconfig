@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2015 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package ro.ciubex.tkconfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +32,8 @@ import ro.ciubex.tkconfig.models.ContactChooseHandler;
 import ro.ciubex.tkconfig.models.ContactModel;
 import ro.ciubex.tkconfig.models.GpsContact;
 import ro.ciubex.tkconfig.models.History;
+
+import android.annotation.TargetApi;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -69,6 +72,26 @@ public class TKConfigApplication extends Application {
 	private Uri sendFolderUri;
 	private String defaultBackupPath;
 
+	private static int mSdkInt = 8;
+	private SharedPreferences mSharedPreferences;
+
+	private static final String KEY_HAVE_PERMISSIONS_ASKED = "havePermissionsAsked";
+	public static final String PERMISSION_FOR_READ_CONTACTS = "android.permission.READ_CONTACTS";
+	public static final String PERMISSION_FOR_SEND_SMS = "android.permission.SEND_SMS";
+	public static final String PERMISSION_FOR_READ_SMS = "android.permission.READ_SMS";
+	public static final String PERMISSION_FOR_WRITE_SMS = "android.permission.WRITE_SMS";
+	public static final String PERMISSION_FOR_READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+	public static final String PERMISSION_FOR_WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+
+	public static final List<String> FUNCTIONAL_PERMISSIONS = Arrays.asList(
+			PERMISSION_FOR_READ_CONTACTS,
+			PERMISSION_FOR_SEND_SMS,
+			PERMISSION_FOR_READ_SMS,
+			PERMISSION_FOR_WRITE_SMS,
+			PERMISSION_FOR_READ_EXTERNAL_STORAGE,
+			PERMISSION_FOR_WRITE_EXTERNAL_STORAGE
+	);
+
 	/**
 	 * This method is invoked when the application is created.
 	 * 
@@ -77,6 +100,8 @@ public class TKConfigApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		mSdkInt = android.os.Build.VERSION.SDK_INT;
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		Log.i(TAG, "TKConfigApplication started!");
 		commands = new ArrayList<Command>() {
 			private static final long serialVersionUID = 8883327862834322486L;
@@ -146,7 +171,7 @@ public class TKConfigApplication extends Application {
 				"Send SMS tracker+password to the unit, and it will reply \"tracker ok !\" and switch to \"track\" mode."));
 		commands.add(new Command(
 				"Geo-fence",
-				"stockade?password? ?longitudeE/W?,?latitudeN/S?; ?longitudeE/W?,?latitudeN/S?",
+				"stockade?password? ?longitudeEW?,?latitudeNS?; ?longitudeEW?,?latitudeNS?",
 				"Set up a geo-fence for the unit to restrict its movements within a district. The unit will send the message to the authorized numbers when it breaches the district."));
 		commands.add(new Command("Cancel Geo-fence", "nostockade?password?",
 				"Send SMS nostockade+password to deactivate the Geo-fence function."));
@@ -871,4 +896,162 @@ public class TKConfigApplication extends Application {
 		return success;
 	}
 
+	/**
+	 * Store a boolean value on the shared preferences.
+	 *
+	 * @param key   The shared preference key.
+	 * @param value The boolean value to be saved.
+	 */
+	private void saveBooleanValue(String key, boolean value) {
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
+
+	/**
+	 * Remove a shared preference.
+	 *
+	 * @param key The key of the shared preference to be removed.
+	 */
+	private void removeSharedPreference(String key) {
+		SharedPreferences.Editor editor = mSharedPreferences.edit();
+		editor.remove(key);
+		editor.commit();
+	}
+
+	/**
+	 * Check if should be asked for permissions.
+	 *
+	 * @return True if should be asked for permissions.
+	 */
+	public boolean shouldAskPermissions() {
+		return mSdkInt > 22;
+	}
+
+	/**
+	 * Check if the permissions were asked.
+	 *
+	 * @return True if the permissions were asked.
+	 */
+	public boolean havePermissionsAsked() {
+		return mSharedPreferences.getBoolean(KEY_HAVE_PERMISSIONS_ASKED, false);
+	}
+
+	/**
+	 * Set the permission asked flag to true.
+	 */
+	public void markPermissionsAsked() {
+		saveBooleanValue(KEY_HAVE_PERMISSIONS_ASKED, true);
+	}
+
+	/**
+	 * Check if a permission was asked.
+	 *
+	 * @param permission The permission to be asked.
+	 * @return True if the permission was asked before.
+	 */
+	public boolean isPermissionAsked(String permission) {
+		return mSharedPreferences.getBoolean(permission, false);
+	}
+
+	/**
+	 * Mark a permission as asked.
+	 *
+	 * @param permission Permission to be marked as asked.
+	 */
+	public void markPermissionAsked(String permission) {
+		saveBooleanValue(permission, true);
+	}
+
+	/**
+	 * Remove the permission asked flag.
+	 *
+	 * @param permission The permission for which will be removed the asked flag.
+	 */
+	public void removePermissionAskedMark(String permission) {
+		removeSharedPreference(permission);
+	}
+
+	/**
+	 * Check if a permission is allowed.
+	 *
+	 * @param permission The permission to be checked.
+	 * @return True if the permission is allowed.
+	 */
+	public boolean hasPermission(String permission) {
+		if (shouldAskPermissions()) {
+			return hasPermission23(permission);
+		}
+		return true;
+	}
+
+	/**
+	 * Check if a permission is allowed. (API 23)
+	 *
+	 * @param permission The permission to be checked.
+	 * @return True if the permission is allowed.
+	 */
+	@TargetApi(23)
+	private boolean hasPermission23(String permission) {
+		return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+	}
+
+	/**
+	 * Check if the application have functional permissions.
+	 *
+	 * @return True if all functional permissions are allowed.
+	 */
+	public boolean haveFunctionalPermissions() {
+		for (String permission : TKConfigApplication.FUNCTIONAL_PERMISSIONS) {
+			if (!hasPermission(permission)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Get all not granted permissions.
+	 */
+	public String[] getNotGrantedPermissions() {
+		List<String> permissions = new ArrayList<>();
+		buildRequiredPermissions(permissions, TKConfigApplication.FUNCTIONAL_PERMISSIONS, true);
+		String[] array = null;
+		if (!permissions.isEmpty()) {
+			array = new String[permissions.size()];
+			array = permissions.toArray(array);
+		}
+		return array;
+	}
+
+	/**
+	 * Get an array with all required permissions.
+	 *
+	 * @return Array with permissions to be requested.
+	 */
+	public String[] getAllRequiredPermissions() {
+		List<String> permissions = new ArrayList<>();
+		buildRequiredPermissions(permissions, TKConfigApplication.FUNCTIONAL_PERMISSIONS, false);
+		String[] array = null;
+		if (!permissions.isEmpty()) {
+			array = new String[permissions.size()];
+			array = permissions.toArray(array);
+		}
+		return array;
+	}
+
+	/**
+	 * Put on the permissions all required permissions which is missing and was not asked.
+	 *
+	 * @param permissions         List of permissions to be requested.
+	 * @param requiredPermissions List with all required permissions to be checked.
+	 */
+	private void buildRequiredPermissions(List<String> permissions, List<String> requiredPermissions, boolean force) {
+		for (String permission : requiredPermissions) {
+			if ((force && !hasPermission(permission)) ||
+					(!isPermissionAsked(permission) && !hasPermission(permission))) {
+				permissions.add(permission);
+			}
+		}
+	}
 }

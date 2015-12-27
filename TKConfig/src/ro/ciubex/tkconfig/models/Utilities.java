@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2015 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package ro.ciubex.tkconfig.models;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
@@ -150,5 +151,29 @@ public class Utilities {
 		} catch (NumberFormatException e) {
 		}
 		return l;
+	}
+
+	/**
+	 * Returns true if the object is null or is empty.
+	 *
+	 * @param object The object to be examined.
+	 * @return True if object is null or zero length.
+	 */
+	public static boolean isEmpty(Object object) {
+		if (object != null) {
+			if (object instanceof CharSequence) {
+				String string = String.valueOf(object);
+				return string.trim().length() == 0;
+			} else if (object instanceof StringBuilder) {
+				String string = String.valueOf(object);
+				return string.trim().length() == 0;
+			} else if (object instanceof Collection) {
+				return ((Collection) object).isEmpty();
+			} else if (object instanceof Object[]) {
+				return ((Object[]) object).length == 0;
+			}
+			return false;
+		}
+		return true;
 	}
 }

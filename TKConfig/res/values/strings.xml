@@ -65,7 +65,7 @@
     <string name="send_sms_question">\"%s\"\nContinue?</string>
     <string name="sms_prepare_title">Check SMS parameters:</string>
     <string name="sms_prepare_message">The SMS command contain following parameters:\n%s\nDo you want to modify them?</string>
-    <string name="sms_no_contact">You have not sellected any GPS contact to send the message!</string>
+    <string name="sms_no_contact">You have not selected any GPS contact to send the message!</string>
     <string name="sms_command_not_send">No command was send.</string>
     <string name="sms_command_send_one">A command was send.</string>
     <string name="sms_command_send_many">%s commands were send.</string>
@@ -135,15 +135,21 @@
     <string name="restore_desc">Restore application settings</string>
     <string name="default_backup_dir">/mnt/sdcard/</string>
     <string name="default_backup_file">tkconfig.prefs</string>
-    <string name="file_name_missing">You have not specitied a file name for the operation!</string>
+    <string name="file_name_missing">You have not specified a file name for the operation!</string>
     <string name="backup_started">Preferences backup started!</string>
     <string name="backup_success">Successfully backing to: %s!</string>
-    <string name="backup_exception">Exception ocured during backup: %1$s\nException: %2$s\nMessage: %3$s</string>
+    <string name="backup_exception">Exception occurred during backup: %1$s\nException: %2$s\nMessage: %3$s</string>
     <string name="create_folders_error">Cannot create parent folders: %s</string>
     <string name="restore_file_not_exist">Restore file: %s don\'t exist!\nCreate it first!</string>
     <string name="restore_started">Preferences restored started!</string>
     <string name="restore_success">Successfully restored from: %s!\nYou should restart the application to use restored values.</string>
-    <string name="restore_exception">Exception ocured during restore:  %1$s Exception: %2$s Message: %3$s</string>
+    <string name="restore_exception">Exception occurred during restore:  %1$s Exception: %2$s Message: %3$s</string>
+
+    <!-- Permission sections -->
+    <string name="request_permissions_title">Request required application permission.</string>
+    <string name="request_permissions_desc">Touch this option to request for required application permissions: Read, Send and Write SMS, Contacts (used to get a phone number from your contacts), Storage (for the backup support).</string>
+    <string name="request_permissions_confirmation">Do you want to request for required application permissions?</string>
+    <string name="request_permissions_ok">All required permissions are granted!</string>
 
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>
@@ -162,7 +168,7 @@
 		<br/>
 		The command messages can contain parameters, each parameter should have on front and at the end the ? character.<br/>
 		e.g. ?password? or ?speed?<br/>
-		The \'password\' parrameter is a special parameter and is replaced with the proper GPS password when the messages is sent.<br/>
+		The \'password\' parameter is a special parameter and is replaced with the proper GPS password when the messages is sent.<br/>
 		<br/>
 		The user can define own parameters and commands, can be modified or deleted existing commands also. Each parameter value is saved into application preferences and are available when it\'s needed.<br/>
 		<br/>
@@ -174,6 +180,10 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.9.0<br/>
+        - Added support for Android 6.<br/>
+        Version 2.8.1<br/>
+        - Fixed an issue related with contact list.<br/>
         Version 2.8<br/>
         - UI changes to allow settings from activity bar.<br/>
         Version 2.6<br/>

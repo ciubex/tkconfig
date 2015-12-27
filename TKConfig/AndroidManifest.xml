@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ro.ciubex.tkconfig"
-    android:versionCode="21"
-    android:versionName="2.8" >
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="21" />
+    package="ro.ciubex.tkconfig">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -47,10 +41,6 @@
         <activity
             android:name="ro.ciubex.tkconfig.activities.GpsContactActivity"
             android:label="@string/gps_contacts_list" />
-        <activity
-            android:name="ro.ciubex.tkconfig.activities.GpsContactEditorActivity"
-            android:label="@string/contact_editor_edit"
-            android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name="ro.ciubex.tkconfig.activities.ContactsActivity"
             android:label="@string/contacts_list" />

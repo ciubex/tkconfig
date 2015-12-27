@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2015 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +21,19 @@ package ro.ciubex.tkconfig.activities;
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
 import ro.ciubex.tkconfig.models.Constants;
+import ro.ciubex.tkconfig.models.Utilities;
 import ro.ciubex.tkconfig.tasks.DefaultAsyncTaskResult;
 import ro.ciubex.tkconfig.tasks.PreferencesFileUtilAsynkTask;
 import ro.ciubex.tkconfig.forms.CustomEditTextPreference;
+
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 
 /**
  * This is the main preference activity class.
@@ -40,11 +44,12 @@ import android.preference.PreferenceActivity;
 public class TkPreferences extends PreferenceActivity implements
 		CustomEditTextPreference.Listener,
 		PreferencesFileUtilAsynkTask.Responder {
-	private TKConfigApplication application;
+	private TKConfigApplication mApplication;
 	private CustomEditTextPreference preferencesBackup;
 	private CustomEditTextPreference preferencesRestore;
 	private static final int PREF_BACKUP = 1;
 	private static final int PREF_RESTORE = 2;
+	private static final int PERMISSIONS_REQUEST_CODE = 44;
 
 	/**
 	 * Method called when this preference activity is created
@@ -52,9 +57,10 @@ public class TkPreferences extends PreferenceActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		application = (TKConfigApplication) getApplication();
+		mApplication = (TKConfigApplication) getApplication();
 		addPreferencesFromResource(R.xml.tk_preferences);
 		prepareCommands();
+		initPreferencesByPermissions();
 		prepareAllCustomEditTextPreference();
 	}
 
@@ -80,6 +86,25 @@ public class TkPreferences extends PreferenceActivity implements
 						return onCommandsReset();
 					}
 				});
+		Preference requestPermissions = (Preference) findPreference("requestPermissions");
+		requestPermissions.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				return onRequestPermissionsDialog();
+			}
+		});
+	}
+
+	/**
+	 * Remove the permission request preference if should not be asked for permissions.
+	 */
+	private void initPreferencesByPermissions() {
+		if (!mApplication.shouldAskPermissions()) {
+			Preference requestPermissions = (Preference) findPreference("requestPermissions");
+			PreferenceCategory generalSettings = (PreferenceCategory) findPreference("generalSettings");
+			generalSettings.removePreference(requestPermissions);
+		}
 	}
 
 	/**
@@ -117,9 +142,9 @@ public class TkPreferences extends PreferenceActivity implements
 	public void startFileAsynkTask(
 			PreferencesFileUtilAsynkTask.Operation operationType) {
 		if (operationType == PreferencesFileUtilAsynkTask.Operation.RESTORE) {
-			application.showProgressDialog(this, R.string.backup_started);
+			mApplication.showProgressDialog(this, R.string.backup_started);
 		} else {
-			application.showProgressDialog(this, R.string.restore_started);
+			mApplication.showProgressDialog(this, R.string.restore_started);
 		}
 	}
 
@@ -135,14 +160,14 @@ public class TkPreferences extends PreferenceActivity implements
 	public void endFileAsynkTask(
 			PreferencesFileUtilAsynkTask.Operation operationType,
 			DefaultAsyncTaskResult result) {
-		application.hideProgressDialog();
+		mApplication.hideProgressDialog();
 		if (result.resultId == Constants.OK) {
-			application.showMessageInfo(this, result.resultMessage);
+			mApplication.showMessageInfo(this, result.resultMessage);
 			if (operationType == PreferencesFileUtilAsynkTask.Operation.RESTORE) {
 				// restartPreferencesActivity();
 			}
 		} else {
-			application.showMessageError(this, result.resultMessage);
+			mApplication.showMessageError(this, result.resultMessage);
 		}
 	}
 
@@ -177,7 +202,7 @@ public class TkPreferences extends PreferenceActivity implements
 	 *            The full file and path of saved or loaded preferences
 	 */
 	private void storeBackupPath(String backupPath) {
-		application.setBackupPath(backupPath);
+		mApplication.setBackupPath(backupPath);
 	}
 
 	/**
@@ -186,7 +211,7 @@ public class TkPreferences extends PreferenceActivity implements
 	 * @return The full file and path of saved or loaded preferences
 	 */
 	private String getBackupPath() {
-		return application.getBackupPath();
+		return mApplication.getBackupPath();
 	}
 
 	/**
@@ -252,8 +277,70 @@ public class TkPreferences extends PreferenceActivity implements
 	 * This method is used to reset the command list to default commands.
 	 */
 	private void doCommandsReset() {
-		application.populateDefaultCommands();
-		application.commandsStoreCleanup();
-		application.setMustReloadCommands(true);
+		mApplication.populateDefaultCommands();
+		mApplication.commandsStoreCleanup();
+		mApplication.setMustReloadCommands(true);
+	}
+
+	/**
+	 * Method invoked when was pressed the request permission preference.
+	 */
+	private boolean onRequestPermissionsDialog() {
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.app_name)
+				.setMessage(R.string.request_permissions_confirmation)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+												int whichButton) {
+								doRequestPermissions();
+							}
+						}).setNegativeButton(R.string.no, null).show();
+		return true;
+	}
+
+	/**
+	 * Check if are permissions needed to be requested.
+	 */
+	private void doRequestPermissions() {
+		String[] permissions = mApplication.getNotGrantedPermissions();
+		if (Utilities.isEmpty(permissions)) {
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.app_name)
+					.setMessage(R.string.request_permissions_ok)
+					.setIcon(android.R.drawable.ic_dialog_info)
+					.setNeutralButton(R.string.ok, null).show();
+		} else {
+			requestForPermissions(permissions);
+		}
+	}
+
+	/**
+	 * Method used to request for application required permissions.
+	 */
+	@TargetApi(23)
+	private void requestForPermissions(String[] permissions) {
+		if (!Utilities.isEmpty(permissions)) {
+			requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
+		}
+	}
+
+	/**
+	 * Callback for the result from requesting permissions.
+	 *
+	 * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
+	 * @param permissions  The requested permissions. Never null.
+	 * @param grantResults The grant results for the corresponding permissions.
+	 */
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		if (PERMISSIONS_REQUEST_CODE == requestCode) {
+			mApplication.markPermissionsAsked();
+			for (String permission : permissions) {
+				mApplication.markPermissionAsked(permission);
+			}
+		}
 	}
 }

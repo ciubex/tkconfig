@@ -14,7 +14,6 @@
         android:id="@+id/contacts_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/list_background"
         android:fastScrollEnabled="false"
         android:listSelector="@drawable/list_selector" />
 

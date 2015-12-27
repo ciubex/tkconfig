@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2015 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@ import ro.ciubex.tkconfig.list.CommandListAdapter;
 import ro.ciubex.tkconfig.list.ParamListAdapter;
 import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.GpsContact;
+import ro.ciubex.tkconfig.models.Utilities;
+
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -57,6 +60,7 @@ public class TKConfigActivity extends BaseActivity {
 
 	private static final int REQUEST_CODE_SETTINGS = 0;
 	private static final int REQUEST_CODE_ABOUT = 1;
+	private static final int PERMISSIONS_REQUEST_CODE = 44;
 
 	private enum METHOD {
 		NOTHING, SEND_SMS
@@ -83,6 +87,7 @@ public class TKConfigActivity extends BaseActivity {
 		app.commandsLoad();
 		app.historiesLoad();
 		reloadAdapter();
+		checkForPermissions();
 	}
 
 	/**
@@ -92,6 +97,29 @@ public class TKConfigActivity extends BaseActivity {
 	protected void onPause() {
 		app.onClose();
 		super.onPause();
+	}
+
+	/**
+	 * Method used to check for application permissions.
+	 */
+	@TargetApi(23)
+	private void checkForPermissions() {
+		if (app.shouldAskPermissions()) {
+			updateOptionsByPermissions();
+			if (!app.havePermissionsAsked()) {
+				requestForPermissions(app.getAllRequiredPermissions());
+			}
+		}
+	}
+
+	/**
+	 * Method used to request for application required permissions.
+	 */
+	@TargetApi(23)
+	private void requestForPermissions(String[] permissions) {
+		if (!Utilities.isEmpty(permissions)) {
+			requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
+		}
 	}
 
 	/**
@@ -129,7 +157,7 @@ public class TKConfigActivity extends BaseActivity {
 	 * This method show the pop up menu when the user do a long click on a list
 	 * item.
 	 * 
-	 * @param contactPosition
+	 * @param position
 	 *            The contact position where was made the long click
 	 */
 	private void showItemDialogMenu(final int position) {
@@ -273,7 +301,7 @@ public class TKConfigActivity extends BaseActivity {
 			showConfirmationDialog(
 					R.string.remove_command,
 					app.getString(R.string.remove_command_question,
-							command.getName()), CONFIRM_ID_DELETE, command);
+							command.getName()), CONFIRM_ID_DELETE, Integer.valueOf(position));
 		}
 	}
 
@@ -294,7 +322,7 @@ public class TKConfigActivity extends BaseActivity {
 		if (positive) {
 			switch (confirmationId) {
 			case CONFIRM_ID_DELETE:
-				doDeleteCommand((Command) anObject);
+				doDeleteCommand((Integer) anObject);
 				break;
 			case CONFIRM_ID_SMS_SEND:
 				doSendSMS((Command) anObject);
@@ -316,12 +344,12 @@ public class TKConfigActivity extends BaseActivity {
 	/**
 	 * Delete a command from the list.
 	 * 
-	 * @param command
-	 *            The command to be deleted.
+	 * @param position
+	 *            The position of command to be deleted.
 	 */
-	private void doDeleteCommand(Command command) {
+	private void doDeleteCommand(int position) {
 		app.showProgressDialog(this, R.string.please_wait);
-		app.getCommands().remove(command);
+		app.getCommands().remove(position);
 		app.commandsSave();
 		reloadAdapter();
 	}
@@ -559,5 +587,36 @@ public class TKConfigActivity extends BaseActivity {
 		Intent intent = new Intent(getBaseContext(), HistoryActivity.class);
 		startActivityForResult(intent, 1);
 		return true;
+	}
+
+	/**
+	 * Callback for the result from requesting permissions.
+	 *
+	 * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
+	 * @param permissions  The requested permissions. Never null.
+	 * @param grantResults The grant results for the corresponding permissions.
+	 */
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		if (PERMISSIONS_REQUEST_CODE == requestCode) {
+			app.markPermissionsAsked();
+			for (String permission : permissions) {
+				app.markPermissionAsked(permission);
+			}
+			updateOptionsByPermissions();
+		}
+	}
+
+	/**
+	 * Update settings options based on the allowed permissions.
+	 */
+	private void updateOptionsByPermissions() {
+		boolean allowed;
+		if (app.shouldAskPermissions()) {
+			// functionality
+			allowed = app.haveFunctionalPermissions();
+//			mEnableKeepScreenLockService.setEnabled(allowed);
+//			mProximitySensorState.setEnabled(allowed);
+		}
 	}
 }

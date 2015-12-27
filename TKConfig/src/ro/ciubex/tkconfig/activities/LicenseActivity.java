@@ -24,6 +24,8 @@ import java.io.InputStream;
 import ro.ciubex.tkconfig.R;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 /**
@@ -56,8 +58,9 @@ public class LicenseActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		if (licenseText == null) {
-			licenseText = getStreamText("LICENSE.TXT");
-			licenseTextView.setText(licenseText);
+			licenseText = getStreamText("gpl-3.0-standalone.html");
+			licenseTextView.setMovementMethod(LinkMovementMethod.getInstance());
+			licenseTextView.setText(Html.fromHtml(licenseText));
 		}
 	}
 

@@ -1,18 +1,18 @@
 /**
  * This file is part of TKConfig application.
- * 
- * Copyright (C) 2013 Claudiu Ciobotariu
- * 
+ *
+ * Copyright (C) 2015 Claudiu Ciobotariu
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,6 +21,7 @@ package ro.ciubex.tkconfig.activities;
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.list.HistoryListAdapter;
 import ro.ciubex.tkconfig.models.History;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -31,7 +32,6 @@ import android.widget.ListView;
 
 /**
  * @author Claudiu Ciobotariu
- * 
  */
 public class HistoryActivity extends BaseActivity {
 	private HistoryListAdapter adapter;
@@ -70,7 +70,7 @@ public class HistoryActivity extends BaseActivity {
 		historiesList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+									int position, long id) {
 				if (position > -1 && position < adapter.getCount()) {
 					showItemDialogMenu(position);
 				}
@@ -98,10 +98,10 @@ public class HistoryActivity extends BaseActivity {
 	protected boolean onMenuItemSelected(int menuItemId) {
 		boolean processed = false;
 		switch (menuItemId) {
-		case R.id.menu_back:
-			processed = true;
-			goBack();
-			break;
+			case R.id.menu_back:
+				processed = true;
+				goBack();
+				break;
 		}
 		return processed;
 	}
@@ -109,23 +109,23 @@ public class HistoryActivity extends BaseActivity {
 	/**
 	 * This method show the pop up menu when the user do a long click on a list
 	 * item.
-	 * 
-	 * @param contactPosition
-	 *            The contact position where was made the long click
+	 *
+	 * @param position The contact position where was made the long click
 	 */
 	private void showItemDialogMenu(final int position) {
+		final History history = (History) adapter.getItem(position);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.item_edit);
+		builder.setTitle(getDialogTitle(history));
 		builder.setItems(R.array.history_menu_list,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
-						case 0:
-							onMenuItemResendSMS(position);
-							break;
-						case 1:
-							onMenuItemDelete(position);
-							break;
+							case 0:
+								onMenuItemResendSMS(history);
+								break;
+							case 1:
+								onMenuItemDelete(history);
+								break;
 						}
 					}
 				});
@@ -133,13 +133,29 @@ public class HistoryActivity extends BaseActivity {
 	}
 
 	/**
-	 * This method is invoked when the user chose to delete an history item.
-	 * 
-	 * @param position
-	 *            The position of history item to be deleted.
+	 * Get the history dialog menu title.
+	 *
+	 * @param history The history item.
+	 * @return The dialog menu title.
 	 */
-	private void onMenuItemDelete(int position) {
-		final History history = (History) adapter.getItem(position);
+	private String getDialogTitle(final History history) {
+		String result = "";
+		if (history != null) {
+			String cmd = history.getSmsCommand();
+			if (cmd.length() > 9) {
+				cmd = cmd.substring(0, 9) + "...";
+			}
+			result = app.getString(R.string.item_edit, cmd);
+		}
+		return result;
+	}
+
+	/**
+	 * This method is invoked when the user chose to delete an history item.
+	 *
+	 * @param history The history item to be deleted.
+	 */
+	private void onMenuItemDelete(final History history) {
 		if (history != null) {
 			showConfirmationDialog(
 					R.string.remove_history,
@@ -151,12 +167,10 @@ public class HistoryActivity extends BaseActivity {
 
 	/**
 	 * This method is invoked when the user chose to resend an history item.
-	 * 
-	 * @param position
-	 *            The position of history item to be resend.
+	 *
+	 * @param history The history item to be resend.
 	 */
-	private void onMenuItemResendSMS(int position) {
-		final History history = (History) adapter.getItem(position);
+	private void onMenuItemResendSMS(final History history) {
 		if (history != null) {
 			showConfirmationDialog(
 					R.string.resend_command,
@@ -169,34 +183,30 @@ public class HistoryActivity extends BaseActivity {
 	/**
 	 * This method is invoked by the each time when is accepted a confirmation
 	 * dialog.
-	 * 
-	 * @param positive
-	 *            True if the confirmation is positive.
-	 * @param confirmationId
-	 *            The confirmation ID to identify the case.
-	 * @param anObject
-	 *            An object send by the caller method.
+	 *
+	 * @param positive       True if the confirmation is positive.
+	 * @param confirmationId The confirmation ID to identify the case.
+	 * @param anObject       An object send by the caller method.
 	 */
 	@Override
 	protected void onConfirmation(boolean positive, int confirmationId,
-			Object anObject) {
+								  Object anObject) {
 		if (positive) {
 			switch (confirmationId) {
-			case CONFIRM_ID_RESEND:
-				doResendSMS((History) anObject);
-				break;
-			case CONFIRM_ID_DELETE:
-				doDeleteHistory((History) anObject);
-				break;
+				case CONFIRM_ID_RESEND:
+					doResendSMS((History) anObject);
+					break;
+				case CONFIRM_ID_DELETE:
+					doDeleteHistory((History) anObject);
+					break;
 			}
 		}
 	}
 
 	/**
 	 * Remove the history from the list.
-	 * 
-	 * @param history
-	 *            History to be removed.
+	 *
+	 * @param history History to be removed.
 	 */
 	private void doDeleteHistory(History history) {
 		app.showProgressDialog(this, R.string.please_wait);
@@ -207,9 +217,8 @@ public class HistoryActivity extends BaseActivity {
 
 	/**
 	 * Resend a SMS command from the history.
-	 * 
-	 * @param history
-	 *            History with the command to be resend.
+	 *
+	 * @param history History with the command to be resend.
 	 */
 	private void doResendSMS(History history) {
 		app.showProgressDialog(this, R.string.please_wait);
