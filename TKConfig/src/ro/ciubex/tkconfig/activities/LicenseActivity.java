@@ -48,7 +48,7 @@ public class LicenseActivity extends BaseActivity {
 		setContentView(R.layout.license_layout);
 
 		licenseTextView = (TextView) findViewById(R.id.licenseTextView);
-		// licenseTextView.setMovementMethod(new ScrollingMovementMethod());
+		setMenuId(R.menu.back_only_menu);
 	}
 
 	/**
@@ -95,5 +95,20 @@ public class LicenseActivity extends BaseActivity {
 			}
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Prepare Option menu
+	 */
+	@Override
+	protected boolean onMenuItemSelected(int menuItemId) {
+		boolean processed = false;
+		switch (menuItemId) {
+			case R.id.menu_back:
+				processed = true;
+				goBack();
+				break;
+		}
+		return processed;
 	}
 }

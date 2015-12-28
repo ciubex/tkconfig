@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import ro.ciubex.tkconfig.models.Command;
 import ro.ciubex.tkconfig.models.Constants;
@@ -74,6 +75,8 @@ public class TKConfigApplication extends Application {
 
 	private static int mSdkInt = 8;
 	private SharedPreferences mSharedPreferences;
+
+	private static final String KEY_PREFIX_HISTORY = "history_";
 
 	private static final String KEY_HAVE_PERMISSIONS_ASKED = "havePermissionsAsked";
 	public static final String PERMISSION_FOR_READ_CONTACTS = "android.permission.READ_CONTACTS";
@@ -482,17 +485,31 @@ public class TKConfigApplication extends Application {
 	 * Method used to save the histories to the application preferences.
 	 */
 	public void historiesSave() {
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putInt("histories", histories.size());
 		int i = 0;
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		removeOldHistories(editor);
+		editor.putInt("histories", histories.size());
 		for (History history : histories) {
-			editor.putLong("history_" + i + "_dateTime", history.getDateTime());
-			editor.putString("history_" + i + "_cmd", history.getSmsCommand());
-			editor.putString("history_" + i + "_number",
+			editor.putLong(KEY_PREFIX_HISTORY + i + "_dateTime", history.getDateTime());
+			editor.putString(KEY_PREFIX_HISTORY + i + "_cmd", history.getSmsCommand());
+			editor.putString(KEY_PREFIX_HISTORY + i + "_number",
 					history.getPhoneNumber());
 			i++;
 		}
 		editor.commit();
+	}
+
+	/**
+	 * Remove all histories from the SharedPreferences.
+	 * @param editor The SharedPreferences editor.
+	 */
+	private void removeOldHistories(SharedPreferences.Editor editor) {
+		Set<String> keys = sharedPreferences.getAll().keySet();
+		for(String key : keys) {
+			if (key.startsWith(KEY_PREFIX_HISTORY)) {
+				editor.remove(key);
+			}
+		}
 	}
 
 	/**
@@ -505,10 +522,10 @@ public class TKConfigApplication extends Application {
 			histories.clear();
 		}
 		while (i < count) {
-			histories.add(new History(sharedPreferences.getLong("history_" + i
-					+ "_dateTime", 0L), sharedPreferences.getString("history_"
+			histories.add(new History(sharedPreferences.getLong(KEY_PREFIX_HISTORY + i
+					+ "_dateTime", 0L), sharedPreferences.getString(KEY_PREFIX_HISTORY
 					+ i + "_number", ""), sharedPreferences.getString(
-					"history_" + i + "_cmd", "")));
+					KEY_PREFIX_HISTORY + i + "_cmd", "")));
 			i++;
 		}
 	}

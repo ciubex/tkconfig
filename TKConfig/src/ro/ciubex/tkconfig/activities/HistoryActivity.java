@@ -39,6 +39,7 @@ public class HistoryActivity extends BaseActivity {
 
 	private final int CONFIRM_ID_RESEND = 0;
 	private final int CONFIRM_ID_DELETE = 1;
+	private final int CONFIRM_ID_DELETE_ALL = 2;
 
 	/**
 	 * The method invoked when the activity is creating
@@ -101,6 +102,10 @@ public class HistoryActivity extends BaseActivity {
 			case R.id.menu_back:
 				processed = true;
 				goBack();
+				break;
+			case R.id.menu_clean_history:
+				processed = true;
+				cleanHistory();
 				break;
 		}
 		return processed;
@@ -199,6 +204,9 @@ public class HistoryActivity extends BaseActivity {
 				case CONFIRM_ID_DELETE:
 					doDeleteHistory((History) anObject);
 					break;
+				case CONFIRM_ID_DELETE_ALL:
+					doDeleteAllHistory();
+					break;
 			}
 		}
 	}
@@ -216,6 +224,16 @@ public class HistoryActivity extends BaseActivity {
 	}
 
 	/**
+	 * Perform all history deletion.
+	 */
+	private void doDeleteAllHistory() {
+		app.showProgressDialog(this, R.string.please_wait);
+		app.getHistories().clear();
+		app.historiesSave();
+		reloadAdapter();
+	}
+
+	/**
 	 * Resend a SMS command from the history.
 	 *
 	 * @param history History with the command to be resend.
@@ -226,5 +244,17 @@ public class HistoryActivity extends BaseActivity {
 				history.getSmsCommand());
 		app.showMessageInfo(this, R.string.resend_command_finish);
 		reloadAdapter();
+	}
+
+	/**
+	 * Method invoked when the user try to clear the history list.
+	 */
+	private void cleanHistory() {
+		if (!adapter.isEmpty()) {
+			showConfirmationDialog(
+					R.string.history,
+					app.getString(R.string.clear_history_question), CONFIRM_ID_DELETE_ALL,
+					null);
+		}
 	}
 }

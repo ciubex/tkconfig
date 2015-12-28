@@ -22,8 +22,8 @@ android {
         applicationId "ro.ciubex.tkconfig"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 23
-        versionName "2.9.0"
+        versionCode 24
+        versionName "2.9.1"
     }
 
     sourceSets {
@@ -49,9 +49,6 @@ android {
                 def newName = "TKConfig.apk";
                 output.outputFile = new File(apk.parentFile, newName);
             }
-        }
-        release {
-            minifyEnabled true
         }
     }
 }

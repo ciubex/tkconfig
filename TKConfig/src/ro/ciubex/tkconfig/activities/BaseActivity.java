@@ -67,10 +67,14 @@ public class BaseActivity extends ActionBarActivity {
 		boolean processed = false;
 		if (showMenu) {
 			MenuInflater inflater = getMenuInflater();
-			inflater.inflate(menuId, menu);
-			if (app.isProPresent()) {
-				MenuItem item_donate = menu.findItem(R.id.menu_donate);
-				item_donate.setVisible(false);
+			if (inflater != null) {
+				inflater.inflate(menuId, menu);
+				if (app.isProPresent()) {
+					MenuItem item_donate = menu.findItem(R.id.menu_donate);
+					if (item_donate != null && item_donate.isVisible()) {
+						item_donate.setVisible(false);
+					}
+				}
 			}
 			processed = true;
 		}

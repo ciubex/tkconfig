@@ -88,6 +88,8 @@
     <string name="resend_command">Resend command</string>
     <string name="resend_command_question">Do you want to resend the command:\n\"%s\"?</string>
     <string name="resend_command_finish">The command was send again to the GPS.</string>
+    <string name="clear_history">Clear history</string>
+    <string name="clear_history_question">Do you want to remove all commands recorder on the history list?</string>
 
     <!-- Preferences -->
     <string name="settings">Settings</string>
@@ -180,6 +182,9 @@
         <br/>
         <hr />
         <u><b>Change log:</b></u><br/>
+        Version 2.9.1<br/>
+        - Bug fixed related with About menu item.<br/>
+        - Added support to clean the History list.<br/>
         Version 2.9.0<br/>
         - Added support for Android 6.<br/>
         Version 2.8.1<br/>
