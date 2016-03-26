@@ -1,6 +1,8 @@
 <resources>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="Base.V23.Theme.AppCompat"/>
+    <style name="AppThemeDark" parent="Base.V23.Theme.AppCompat"/>
+
+    <style name="AppThemeLight" parent="Base.V23.Theme.AppCompat.Light"/>
 
 </resources>

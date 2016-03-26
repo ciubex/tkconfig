@@ -41,8 +41,8 @@ public class GpsContactListAdapter extends BaseAdapter {
 	private TKConfigApplication application;
 	private boolean modified;
 
-	public GpsContactListAdapter(TKConfigApplication application) {
-		mInflater = (LayoutInflater) application
+	public GpsContactListAdapter(Context context, TKConfigApplication application) {
+		mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.application = application;
 	}

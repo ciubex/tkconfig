@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.5.0'
     }
 }
 apply plugin: 'com.android.application'
@@ -22,8 +22,8 @@ android {
         applicationId "ro.ciubex.tkconfig"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 24
-        versionName "2.9.1"
+        versionCode 25
+        versionName "3.0.0"
     }
 
     sourceSets {

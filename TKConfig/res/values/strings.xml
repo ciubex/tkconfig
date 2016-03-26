@@ -4,7 +4,7 @@
     <!-- General messages -->
     <string name="app_name">TKConfig</string>
     <string name="hello_world">Hello world!</string>
-    <string name="no_commands">Not defined commands.</string>
+    <string name="no_commands">No commands.</string>
     <string name="please_wait">Please wait&#8230;</string>
     <string name="loading_wait">Loading&#8230;</string>
     <string name="ok">OK</string>
@@ -27,6 +27,20 @@
     <string name="menu_back">Back</string>
     <string name="menu_license">License</string>
     <string name="menu_add">Add</string>
+
+    <!-- UI settings -->
+    <string name="app_theme_title">Application theme:</string>
+    <string name="app_theme_title_param">Application theme: %s</string>
+    <string name="app_theme_desc">Set the application theme: light or dark.</string>
+    <string-array name="app_theme_labels">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+    <string-array name="app_theme_values" translatable="false">
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+    <string name="must_restart_application">To apply changes the application will try to restart itself, if the changes are not applied please restart manually the application!</string>
 
     <!-- Context menu -->
     <string name="item_edit">Command: %s</string>
@@ -152,6 +166,7 @@
     <string name="request_permissions_desc">Touch this option to request for required application permissions: Read, Send and Write SMS, Contacts (used to get a phone number from your contacts), Storage (for the backup support).</string>
     <string name="request_permissions_confirmation">Do you want to request for required application permissions?</string>
     <string name="request_permissions_ok">All required permissions are granted!</string>
+    <string name="no_permissions_send_sms">Send SMS permission is not granted! You must grant this permission to send SMS commands.</string>
 
     <!-- Donation -->
     <string name="donate_title">Donation confirmation</string>

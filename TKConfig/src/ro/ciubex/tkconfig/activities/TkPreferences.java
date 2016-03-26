@@ -28,8 +28,10 @@ import ro.ciubex.tkconfig.forms.CustomEditTextPreference;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -42,6 +44,7 @@ import android.preference.PreferenceCategory;
  * 
  */
 public class TkPreferences extends PreferenceActivity implements
+		SharedPreferences.OnSharedPreferenceChangeListener,
 		CustomEditTextPreference.Listener,
 		PreferencesFileUtilAsynkTask.Responder {
 	private TKConfigApplication mApplication;
@@ -50,14 +53,16 @@ public class TkPreferences extends PreferenceActivity implements
 	private static final int PREF_BACKUP = 1;
 	private static final int PREF_RESTORE = 2;
 	private static final int PERMISSIONS_REQUEST_CODE = 44;
+	private Preference mAppTheme;
 
 	/**
 	 * Method called when this preference activity is created
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		mApplication = (TKConfigApplication) getApplication();
+		applyApplicationTheme();
+		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.tk_preferences);
 		prepareCommands();
 		initPreferencesByPermissions();
@@ -65,10 +70,18 @@ public class TkPreferences extends PreferenceActivity implements
 	}
 
 	/**
+	 * Apply application theme.
+	 */
+	private void applyApplicationTheme() {
+		this.setTheme(mApplication.getApplicationTheme());
+	}
+
+	/**
 	 * Prepare preference handler
 	 */
 	private void prepareCommands() {
-		Preference preferencesGpsContacts = (Preference) findPreference("gpsContacts");
+		mAppTheme = findPreference("appTheme");
+		Preference preferencesGpsContacts = findPreference("gpsContacts");
 		preferencesGpsContacts
 				.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
@@ -77,7 +90,7 @@ public class TkPreferences extends PreferenceActivity implements
 						return onShowGPSContacts();
 					}
 				});
-		Preference preferencesReset = (Preference) findPreference("resetCommands");
+		Preference preferencesReset = findPreference("resetCommands");
 		preferencesReset
 				.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
@@ -86,7 +99,7 @@ public class TkPreferences extends PreferenceActivity implements
 						return onCommandsReset();
 					}
 				});
-		Preference requestPermissions = (Preference) findPreference("requestPermissions");
+		Preference requestPermissions = findPreference("requestPermissions");
 		requestPermissions.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
 			@Override
@@ -101,7 +114,7 @@ public class TkPreferences extends PreferenceActivity implements
 	 */
 	private void initPreferencesByPermissions() {
 		if (!mApplication.shouldAskPermissions()) {
-			Preference requestPermissions = (Preference) findPreference("requestPermissions");
+			Preference requestPermissions = findPreference("requestPermissions");
 			PreferenceCategory generalSettings = (PreferenceCategory) findPreference("generalSettings");
 			generalSettings.removePreference(requestPermissions);
 		}
@@ -119,6 +132,27 @@ public class TkPreferences extends PreferenceActivity implements
 		preferencesRestore = (CustomEditTextPreference) findPreference("preferencesRestore");
 		preferencesRestore.setResultListener(this, PREF_RESTORE);
 		preferencesRestore.setText(backupPath);
+	}
+
+	/**
+	 * Prepare all informations when the activity is resuming
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getPreferenceScreen().getSharedPreferences()
+				.registerOnSharedPreferenceChangeListener(this);
+		prepareSummaries();
+	}
+
+	/**
+	 * Unregister the preference changes when the activity is on pause
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		getPreferenceScreen().getSharedPreferences()
+				.unregisterOnSharedPreferenceChangeListener(this);
 	}
 
 	/**
@@ -342,5 +376,68 @@ public class TkPreferences extends PreferenceActivity implements
 				mApplication.markPermissionAsked(permission);
 			}
 		}
+	}
+
+	/**
+	 * This method is invoked when a preference is changed
+	 *
+	 * @param sharedPreferences The shared preference
+	 * @param key               Key of changed preference
+	 */
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (TKConfigApplication.KEY_APP_THEME.equals(key)) {
+			showRestartActivityMessage();
+			prepareSummaries();
+		}
+	}
+
+	/**
+	 * Show to the user an alert message.
+	 */
+	private void showRestartActivityMessage() {
+		final Context prefContext = this;
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.app_name)
+				.setMessage(R.string.must_restart_application)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+					public void onClick(DialogInterface dialog,
+										int whichButton) {
+						restartApplication();
+					}
+				}).show();
+	}
+
+	/**
+	 * Mark the application to be restarted.
+	 */
+	private void restartApplication() {
+		mApplication.setMustRestart(true);
+		finish();
+	}
+
+	/**
+	 * Prepare preferences summaries
+	 */
+	private void prepareSummaries() {
+		String label = TKConfigApplication.getAppContext().getString(R.string.app_theme_title_param,
+				getSelectedThemeLabel());
+		mAppTheme.setTitle(label);
+	}
+
+	/**
+	 * Get the application theme label.
+	 * @return The application theme label.
+	 */
+	private String getSelectedThemeLabel() {
+		String[] labels = TKConfigApplication.getAppContext().getResources().
+				getStringArray(R.array.app_theme_labels);
+		int themeId = mApplication.getApplicationTheme();
+		if (R.style.AppThemeDark == themeId) {
+			return labels[0];
+		}
+		return labels[1];
 	}
 }

@@ -39,8 +39,8 @@ public class HistoryListAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private TKConfigApplication application;
 
-	public HistoryListAdapter(TKConfigApplication application) {
-		mInflater = (LayoutInflater) application
+	public HistoryListAdapter(Context context, TKConfigApplication application) {
+		mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.application = application;
 	}

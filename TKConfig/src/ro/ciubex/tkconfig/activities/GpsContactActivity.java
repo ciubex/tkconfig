@@ -58,7 +58,7 @@ public class GpsContactActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		app.showProgressDialog(this, R.string.please_wait);
+		mApplication.showProgressDialog(this, R.string.please_wait);
 		reloadAdapter();
 	}
 	
@@ -68,7 +68,7 @@ public class GpsContactActivity extends BaseActivity {
 	@Override
 	protected void onPause() {
 		if (adapter.isModified()) {
-			app.contactsSave();
+			mApplication.contactsSave();
 			adapter.setModified(false);
 		}
 		super.onPause();
@@ -90,7 +90,7 @@ public class GpsContactActivity extends BaseActivity {
 				}
 			}
 		});
-		adapter = new GpsContactListAdapter(app);
+		adapter = new GpsContactListAdapter(this, mApplication);
 		contactList.setAdapter(adapter);
 	}
 
@@ -101,8 +101,8 @@ public class GpsContactActivity extends BaseActivity {
 		adapter.notifyDataSetChanged();
 		contactList.invalidateViews();
 		contactList.scrollBy(0, 0);
-		contactList.setFastScrollEnabled(app.getContacts().size() > 50);
-		app.hideProgressDialog();
+		contactList.setFastScrollEnabled(mApplication.getContacts().size() > 50);
+		mApplication.hideProgressDialog();
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class GpsContactActivity extends BaseActivity {
 	 */
 	private void onMenuItemEdit(int position) {
 		GpsContact contact = (GpsContact) adapter.getItem(position);
-		new GpsContactEditor(this, app, R.string.contact_editor_edit, contact)
+		new GpsContactEditor(this, mApplication, R.string.contact_editor_edit, contact)
 				.show();
 	}
 
@@ -169,7 +169,7 @@ public class GpsContactActivity extends BaseActivity {
 	 * This method is invoked when the user chose to add a new contact item.
 	 */
 	private void onMenuItemAdd() {
-		new GpsContactEditor(this, app, R.string.contact_editor_add, null).show();
+		new GpsContactEditor(this, mApplication, R.string.contact_editor_add, null).show();
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class GpsContactActivity extends BaseActivity {
 		if (contact != null) {
 			showConfirmationDialog(
 					R.string.remove_history,
-					app.getString(R.string.remove_gps_contact_question,
+					mApplication.getString(R.string.remove_gps_contact_question,
 							contact.getName()), CONFIRM_ID_DELETE, contact);
 		}
 	}
@@ -218,9 +218,9 @@ public class GpsContactActivity extends BaseActivity {
 	 *            The contact to be deleted.
 	 */
 	private void doDeleteContact(GpsContact contact) {
-		app.showProgressDialog(this, R.string.please_wait);
-		app.getContacts().remove(contact);
-		app.contactsSave();
+		mApplication.showProgressDialog(this, R.string.please_wait);
+		mApplication.getContacts().remove(contact);
+		mApplication.contactsSave();
 		reloadAdapter();
 	}
 }

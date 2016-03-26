@@ -58,7 +58,7 @@ public class HistoryActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		app.showProgressDialog(this, R.string.please_wait);
+		mApplication.showProgressDialog(this, R.string.please_wait);
 		reloadAdapter();
 	}
 
@@ -77,7 +77,7 @@ public class HistoryActivity extends BaseActivity {
 				}
 			}
 		});
-		adapter = new HistoryListAdapter(app);
+		adapter = new HistoryListAdapter(this, mApplication);
 		historiesList.setAdapter(adapter);
 	}
 
@@ -88,8 +88,8 @@ public class HistoryActivity extends BaseActivity {
 		adapter.notifyDataSetChanged();
 //		historiesList.invalidateViews();
 //		historiesList.scrollBy(0, 0);
-		historiesList.setFastScrollEnabled(app.getHistories().size() > 50);
-		app.hideProgressDialog();
+		historiesList.setFastScrollEnabled(mApplication.getHistories().size() > 50);
+		mApplication.hideProgressDialog();
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class HistoryActivity extends BaseActivity {
 			if (cmd.length() > 9) {
 				cmd = cmd.substring(0, 9) + "...";
 			}
-			result = app.getString(R.string.item_edit, cmd);
+			result = mApplication.getString(R.string.item_edit, cmd);
 		}
 		return result;
 	}
@@ -164,7 +164,7 @@ public class HistoryActivity extends BaseActivity {
 		if (history != null) {
 			showConfirmationDialog(
 					R.string.remove_history,
-					app.getString(R.string.remove_history_question,
+					mApplication.getString(R.string.remove_history_question,
 							history.getSmsCommand()), CONFIRM_ID_DELETE,
 					history);
 		}
@@ -179,7 +179,7 @@ public class HistoryActivity extends BaseActivity {
 		if (history != null) {
 			showConfirmationDialog(
 					R.string.resend_command,
-					app.getString(R.string.resend_command_question,
+					mApplication.getString(R.string.resend_command_question,
 							history.getSmsCommand()), CONFIRM_ID_RESEND,
 					history);
 		}
@@ -217,9 +217,9 @@ public class HistoryActivity extends BaseActivity {
 	 * @param history History to be removed.
 	 */
 	private void doDeleteHistory(History history) {
-		app.showProgressDialog(this, R.string.please_wait);
-		app.getHistories().remove(history);
-		app.historiesSave();
+		mApplication.showProgressDialog(this, R.string.please_wait);
+		mApplication.getHistories().remove(history);
+		mApplication.historiesSave();
 		reloadAdapter();
 	}
 
@@ -227,9 +227,9 @@ public class HistoryActivity extends BaseActivity {
 	 * Perform all history deletion.
 	 */
 	private void doDeleteAllHistory() {
-		app.showProgressDialog(this, R.string.please_wait);
-		app.getHistories().clear();
-		app.historiesSave();
+		mApplication.showProgressDialog(this, R.string.please_wait);
+		mApplication.getHistories().clear();
+		mApplication.historiesSave();
 		reloadAdapter();
 	}
 
@@ -239,10 +239,10 @@ public class HistoryActivity extends BaseActivity {
 	 * @param history History with the command to be resend.
 	 */
 	private void doResendSMS(History history) {
-		app.showProgressDialog(this, R.string.please_wait);
-		app.sendSMS(this, HistoryActivity.class, history.getPhoneNumber(),
+		mApplication.showProgressDialog(this, R.string.please_wait);
+		mApplication.sendSMS(this, HistoryActivity.class, history.getPhoneNumber(),
 				history.getSmsCommand());
-		app.showMessageInfo(this, R.string.resend_command_finish);
+		mApplication.showMessageInfo(this, R.string.resend_command_finish);
 		reloadAdapter();
 	}
 
@@ -253,7 +253,7 @@ public class HistoryActivity extends BaseActivity {
 		if (!adapter.isEmpty()) {
 			showConfirmationDialog(
 					R.string.history,
-					app.getString(R.string.clear_history_question), CONFIRM_ID_DELETE_ALL,
+					mApplication.getString(R.string.clear_history_question), CONFIRM_ID_DELETE_ALL,
 					null);
 		}
 	}

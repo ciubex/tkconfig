@@ -35,7 +35,7 @@ import android.view.MenuItem;
  * 
  */
 public class BaseActivity extends ActionBarActivity {
-	protected TKConfigApplication app;
+	protected TKConfigApplication mApplication;
 	protected int menuId;
 	private boolean showMenu;
 
@@ -44,8 +44,16 @@ public class BaseActivity extends ActionBarActivity {
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		mApplication = (TKConfigApplication) getApplication();
+		applyApplicationTheme();
 		super.onCreate(savedInstanceState);
-		app = (TKConfigApplication) getApplication();
+	}
+
+	/**
+	 * Apply application theme.
+	 */
+	protected void applyApplicationTheme() {
+		this.setTheme(mApplication.getApplicationTheme());
 	}
 
 	/**
@@ -69,7 +77,7 @@ public class BaseActivity extends ActionBarActivity {
 			MenuInflater inflater = getMenuInflater();
 			if (inflater != null) {
 				inflater.inflate(menuId, menu);
-				if (app.isProPresent()) {
+				if (mApplication.isProPresent()) {
 					MenuItem item_donate = menu.findItem(R.id.menu_donate);
 					if (item_donate != null && item_donate.isVisible()) {
 						item_donate.setVisible(false);
@@ -85,7 +93,7 @@ public class BaseActivity extends ActionBarActivity {
 	 * Method invoked on exit
 	 */
 	protected void onExit() {
-		app.onClose();
+		mApplication.onClose();
 		finish();
 	}
 
@@ -93,7 +101,7 @@ public class BaseActivity extends ActionBarActivity {
 	 * Method invoked on back
 	 */
 	protected void goBack() {
-		finish();
+		onExit();
 	}
 
 	/**

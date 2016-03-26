@@ -99,9 +99,9 @@ public class ContactsActivity extends BaseActivity implements
 	 *            The char sequence from the filter
 	 */
 	private void applyFilter(CharSequence charSequence) {
-		app.showProgressDialog(this, R.string.filtering);
+		mApplication.showProgressDialog(this, R.string.filtering);
 		adapter.getFilter().filter(charSequence);
-		app.hideProgressDialog();
+		mApplication.hideProgressDialog();
 	}
 
 	/**
@@ -118,8 +118,9 @@ public class ContactsActivity extends BaseActivity implements
 				doContactChoose(position);
 			}
 		});
-		if (app.getPhoneContacts() == null) {
-			app.setPhoneContacts(new ArrayList<ContactModel>());
+		if (mApplication.getPhoneContacts() == null ||
+				mApplication.getPhoneContacts().isEmpty()) {
+			mApplication.setPhoneContacts(new ArrayList<ContactModel>());
 			loadContactListView();
 		} else {
 			preparePhoneContactsList();
@@ -130,7 +131,7 @@ public class ContactsActivity extends BaseActivity implements
 		if (adapter != null && position > -1
 				&& position < adapter.getCount()) {
 			ContactModel contact = adapter.getItem(position);
-			ContactChooseHandler contactHandler = app
+			ContactChooseHandler contactHandler = mApplication
 					.getContactChooseHandler();
 			if (contactHandler != null) {
 				contactHandler.onContactChoose(contact);
@@ -143,7 +144,7 @@ public class ContactsActivity extends BaseActivity implements
 	 * Prepare thread used to load the contacts to the list view.
 	 */
 	private void loadContactListView() {
-		new LoadContactsAsyncTask(this, app.getPhoneContacts()).execute();
+		new LoadContactsAsyncTask(this, mApplication.getPhoneContacts()).execute();
 	}
 
 	/**
@@ -151,7 +152,7 @@ public class ContactsActivity extends BaseActivity implements
 	 */
 	@Override
 	public void startLoadContacts() {
-		app.showProgressDialog(this, R.string.please_wait);
+		mApplication.showProgressDialog(this, R.string.please_wait);
 	}
 
 	/**
@@ -161,17 +162,17 @@ public class ContactsActivity extends BaseActivity implements
 	public void endLoadContacts(DefaultAsyncTaskResult result) {
 		preparePhoneContactsList();
 		if (Constants.OK == result.resultId) {
-			app.showMessageInfo(this, result.resultMessage);
+			mApplication.showMessageInfo(this, result.resultMessage);
 			startLoadContactImageAsyncTask();
 		} else {
-			app.hideProgressDialog();
+			mApplication.hideProgressDialog();
 			showMessageDialog(R.string.information, result.resultMessage, 0,
 					null);
 		}
 	}
 	
 	private void preparePhoneContactsList() {
-		adapter = new ContactListAdapter(app, app.getPhoneContacts(), app.getDefaultLocale());
+		adapter = new ContactListAdapter(this, mApplication.getPhoneContacts(), mApplication.getDefaultLocale());
 		contactsListView.removeAllViewsInLayout();
 		contactsListView.setAdapter(adapter);
 		contactsListView.invalidateViews();
@@ -180,7 +181,7 @@ public class ContactsActivity extends BaseActivity implements
 	}
 
 	private void startLoadContactImageAsyncTask() {
-		new LoadContactImageAsyncTask(this, app.getPhoneContacts()).execute();
+		new LoadContactImageAsyncTask(this, mApplication.getPhoneContacts()).execute();
 	}
 
 	@Override
@@ -214,7 +215,7 @@ public class ContactsActivity extends BaseActivity implements
 
 	@Override
 	public void endLoadPictures(DefaultAsyncTaskResult result) {
-		app.hideProgressDialog();
+		mApplication.hideProgressDialog();
 	}
 
 }
