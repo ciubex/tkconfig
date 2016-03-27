@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_back"
-        android:icon="@drawable/ic_menu_back"
-        android:title="@string/menu_back">
-    </item>
-    <item
-        android:id="@+id/menu_add"
-        android:icon="@drawable/ic_menu_add"
-        android:title="@string/menu_add">
+        android:id="@+id/more"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_back"
+                android:icon="@drawable/ic_menu_back"
+                android:title="@string/menu_back"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/menu_add"
+                android:icon="@drawable/ic_menu_add"
+                android:title="@string/menu_add"
+                app:showAsAction="never" />
+        </menu>
     </item>
 
 </menu>

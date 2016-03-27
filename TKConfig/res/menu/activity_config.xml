@@ -1,28 +1,44 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_add"
-        android:icon="@drawable/ic_menu_add"
-        android:title="@string/menu_add"/>
-    <item
-        android:id="@+id/menu_donate"
-        android:icon="@drawable/ic_key"
-        android:title="@string/menu_donate"/>
-    <item
-        android:id="@+id/menu_settings"
-        android:icon="@drawable/ic_menu_settings"
-        android:title="@string/menu_settings"/>
-    <item
-        android:id="@+id/menu_history"
-        android:icon="@drawable/ic_menu_history_icon"
-        android:title="@string/menu_history"/>
-    <item
-        android:id="@+id/menu_about"
-        android:icon="@drawable/ic_menu_info_details"
-        android:title="@string/menu_about"/>
-    <item
-        android:id="@+id/menu_exit"
-        android:icon="@drawable/ic_menu_close_clear_cancel"
-        android:title="@string/menu_exit"/>
+        android:id="@+id/more"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title=""
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_add"
+                android:icon="@drawable/ic_menu_add"
+                app:showAsAction="never"
+                android:title="@string/menu_add" />
+            <item
+                android:id="@+id/menu_donate"
+                android:icon="@drawable/ic_key"
+                app:showAsAction="never"
+                android:title="@string/menu_donate" />
+            <item
+                android:id="@+id/menu_settings"
+                android:icon="@drawable/ic_menu_settings"
+                app:showAsAction="never"
+                android:title="@string/menu_settings" />
+            <item
+                android:id="@+id/menu_history"
+                android:icon="@drawable/ic_menu_history_icon"
+                app:showAsAction="never"
+                android:title="@string/menu_history" />
+            <item
+                android:id="@+id/menu_about"
+                android:icon="@drawable/ic_menu_info_details"
+                app:showAsAction="never"
+                android:title="@string/menu_about" />
+            <item
+                android:id="@+id/menu_exit"
+                android:icon="@drawable/ic_menu_close_clear_cancel"
+                app:showAsAction="never"
+                android:title="@string/menu_exit" />
+        </menu>
+    </item>
 
 </menu>

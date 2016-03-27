@@ -22,8 +22,8 @@ android {
         applicationId "ro.ciubex.tkconfig"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 25
-        versionName "3.0.0"
+        versionCode 26
+        versionName "3.0.1"
     }
 
     sourceSets {
