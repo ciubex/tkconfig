@@ -81,26 +81,20 @@ public class TKConfigApplication extends Application {
     private static final String KEY_HAVE_PERMISSIONS_ASKED = "havePermissionsAsked";
     public static final String PERMISSION_FOR_READ_CONTACTS = "android.permission.READ_CONTACTS";
     public static final String PERMISSION_FOR_SEND_SMS = "android.permission.SEND_SMS";
-    public static final String PERMISSION_FOR_READ_SMS = "android.permission.READ_SMS";
     public static final String PERMISSION_FOR_WRITE_SMS = "android.permission.WRITE_SMS";
     public static final String PERMISSION_FOR_READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
     public static final String PERMISSION_FOR_READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
     public static final String PERMISSION_FOR_WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
-    public static final String PERMISSION_FOR_INSTALL_SHORTCUT = "com.android.launcher.permission.INSTALL_SHORTCUT";
-    public static final String PERMISSION_FOR_UNINSTALL_SHORTCUT = "com.android.launcher.permission.UNINSTALL_SHORTCUT";
 
     public static final String KEY_APP_THEME = "appTheme";
 
     public static final List<String> FUNCTIONAL_PERMISSIONS = Arrays.asList(
             PERMISSION_FOR_READ_CONTACTS,
             PERMISSION_FOR_SEND_SMS,
-            PERMISSION_FOR_READ_SMS,
             PERMISSION_FOR_WRITE_SMS,
             PERMISSION_FOR_READ_PHONE_STATE,
             PERMISSION_FOR_READ_EXTERNAL_STORAGE,
-            PERMISSION_FOR_WRITE_EXTERNAL_STORAGE,
-            PERMISSION_FOR_INSTALL_SHORTCUT,
-            PERMISSION_FOR_UNINSTALL_SHORTCUT
+            PERMISSION_FOR_WRITE_EXTERNAL_STORAGE
     );
 
     /**

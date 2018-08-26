@@ -83,6 +83,10 @@ public class AboutActivity extends BaseActivity {
 			processed = true;
 			showLicense();
 			break;
+		case R.id.menu_policy:
+			processed = true;
+			showPolicy();
+			break;
 		}
 		return processed;
 	}
@@ -91,7 +95,21 @@ public class AboutActivity extends BaseActivity {
 	 * Launch License Activity
 	 */
 	private void showLicense() {
-		Intent intent = new Intent(getBaseContext(), LicenseActivity.class);
+		Intent intent = new Intent(getBaseContext(), ShowAssetsActivity.class);
+		Bundle b = new Bundle();
+		b.putString(ShowAssetsActivity.FILE_NAME, "gpl-3.0-standalone.html");
+		intent.putExtras(b);
+		startActivityForResult(intent, 1);
+	}
+
+	/**
+	 * Launch Policy Activity
+	 */
+	private void showPolicy() {
+		Intent intent = new Intent(getBaseContext(), ShowAssetsActivity.class);
+		Bundle b = new Bundle();
+		b.putString(ShowAssetsActivity.FILE_NAME, "privacy-policy.html");
+		intent.putExtras(b);
 		startActivityForResult(intent, 1);
 	}
 }

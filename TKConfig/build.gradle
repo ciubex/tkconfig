@@ -20,22 +20,14 @@ dependencies {
 }
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'ciubex'
-            keyPassword 'noua2011'
-            storeFile file('/home/ciubex/work/Android/keys/AndroidKeys')
-            storePassword 'android'
-        }
-    }
     compileSdkVersion 26
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "ro.ciubex.tkconfig"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 27
-        versionName "3.0.2"
+        versionCode 28
+        versionName "3.0.3"
         multiDexEnabled true
     }
     sourceSets {

@@ -14,6 +14,11 @@
                 app:showAsAction="never"
                 android:title="@string/menu_license" />
             <item
+                android:id="@+id/menu_policy"
+                android:icon="@drawable/ic_menu_view"
+                app:showAsAction="never"
+                android:title="@string/menu_policy" />
+            <item
                 android:id="@+id/menu_back"
                 android:icon="@drawable/ic_menu_back"
                 app:showAsAction="never"
