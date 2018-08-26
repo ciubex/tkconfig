@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2014 Claudiu Ciobotariu
+ * Copyright (C) 2018 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,9 +311,6 @@ public class PreferencesFileUtilAsynkTask extends
 			longValue = Utilities.parseLong(value);
 			editor.putLong(key, longValue);
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append(key).append('+').append(clazz).append('+').append(value)
-				.append('\n');
 	}
 
 	private String[] currentLine(String line) {

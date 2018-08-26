@@ -1,18 +1,18 @@
 /**
  * This file is part of TKConfig application.
- * <p/>
- * Copyright (C) 2015 Claudiu Ciobotariu
- * <p/>
+ *
+ * Copyright (C) 2018 Claudiu Ciobotariu
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * <p/>
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p/>
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -83,8 +83,11 @@ public class TKConfigApplication extends Application {
     public static final String PERMISSION_FOR_SEND_SMS = "android.permission.SEND_SMS";
     public static final String PERMISSION_FOR_READ_SMS = "android.permission.READ_SMS";
     public static final String PERMISSION_FOR_WRITE_SMS = "android.permission.WRITE_SMS";
+    public static final String PERMISSION_FOR_READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
     public static final String PERMISSION_FOR_READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
     public static final String PERMISSION_FOR_WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    public static final String PERMISSION_FOR_INSTALL_SHORTCUT = "com.android.launcher.permission.INSTALL_SHORTCUT";
+    public static final String PERMISSION_FOR_UNINSTALL_SHORTCUT = "com.android.launcher.permission.UNINSTALL_SHORTCUT";
 
     public static final String KEY_APP_THEME = "appTheme";
 
@@ -93,8 +96,11 @@ public class TKConfigApplication extends Application {
             PERMISSION_FOR_SEND_SMS,
             PERMISSION_FOR_READ_SMS,
             PERMISSION_FOR_WRITE_SMS,
+            PERMISSION_FOR_READ_PHONE_STATE,
             PERMISSION_FOR_READ_EXTERNAL_STORAGE,
-            PERMISSION_FOR_WRITE_EXTERNAL_STORAGE
+            PERMISSION_FOR_WRITE_EXTERNAL_STORAGE,
+            PERMISSION_FOR_INSTALL_SHORTCUT,
+            PERMISSION_FOR_UNINSTALL_SHORTCUT
     );
 
     /**
@@ -120,8 +126,8 @@ public class TKConfigApplication extends Application {
                 return true;
             }
         };
-        histories = new ArrayList<History>();
-        contacts = new ArrayList<GpsContact>();
+        histories = new ArrayList<>();
+        contacts = new ArrayList<>();
         defaultLocale = Locale.getDefault();
         smsManager = SmsManager.getDefault();
         contactsLoad();

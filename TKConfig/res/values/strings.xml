@@ -132,8 +132,10 @@
     <string name="contact_selected">Set this GPS contact selected</string>
     <string name="contact_editor_add">Add a new GPS contact</string>
     <string name="contact_editor_edit">Edit a GPS contact</string>
-    <string name="remove_gps_contact_question">Do you want to remove the contact:\n\"%s\"?</string>
+    <string name="remove_gps_contact_question">Do you want to remove the contact:\n\"%s\" from GPS contact list?</string>
     <string name="points">&#8230;</string>
+    <string name="remove_contact">Remove contact</string>
+    <string name="contact_item">Contact: %s</string>
 
     <!-- Phone contacts -->
     <string name="contacts_list">Contacts list</string>

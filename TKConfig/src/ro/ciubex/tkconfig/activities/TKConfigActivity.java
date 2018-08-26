@@ -1,18 +1,18 @@
 /**
  * This file is part of TKConfig application.
- * <p>
- * Copyright (C) 2015 Claudiu Ciobotariu
- * <p>
+ *
+ * Copyright (C) 2018 Claudiu Ciobotariu
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -61,6 +61,7 @@ public class TKConfigActivity extends BaseActivity {
     private static final int REQUEST_CODE_SETTINGS = 0;
     private static final int REQUEST_CODE_ABOUT = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 44;
+    private boolean invokedFromShortcut;
 
     private enum METHOD {
         NOTHING, SEND_SMS
@@ -73,8 +74,14 @@ public class TKConfigActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
-        setMenuId(R.menu.activity_config);
-        prepareMainListView();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            invokedFromShortcut = "true".equalsIgnoreCase(bundle.getString("invokedFromShortcut"));
+        }
+        if (!invokedFromShortcut) {
+            setMenuId(R.menu.activity_config);
+            prepareMainListView();
+        }
     }
 
     /**
@@ -83,17 +90,19 @@ public class TKConfigActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mApplication.showProgressDialog(this, R.string.please_wait);
-        mApplication.commandsLoad();
-        mApplication.historiesLoad();
-        reloadAdapter();
-        checkForPermissions();
+        if (!invokedFromShortcut) {
+            mApplication.showProgressDialog(this, R.string.please_wait);
+            mApplication.commandsLoad();
+            mApplication.historiesLoad();
+            reloadAdapter();
+            checkForPermissions();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mApplication.isMustRestart()) {
+        if (!invokedFromShortcut && mApplication.isMustRestart()) {
             mApplication.setMustRestart(false);
             restartActivity();
         }
@@ -352,14 +361,14 @@ public class TKConfigActivity extends BaseActivity {
     }
 
     /**
-     * This method is invoked when the user chose to send the command.
+     * This method is invoked when the user chose to send a command.
      *
      * @param position The position of command to be send.
      */
     private void onMenuItemSendSMS(int position) {
         final Command command = (Command) adapter.getItem(position);
-        mApplication.prepareCommandParameters(command);
         if (command != null) {
+            mApplication.prepareCommandParameters(command);
             if (command.hasParameters()) {
                 prepareSMSCommand(command);
             } else {

@@ -1,31 +1,43 @@
 buildscript {
     repositories {
         jcenter()
+        google()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile fileTree(include: '*.jar', dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:support-v4:23.1.1'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "22.0.1"
-
+    signingConfigs {
+        config {
+            keyAlias 'ciubex'
+            keyPassword 'noua2011'
+            storeFile file('/home/ciubex/work/Android/keys/AndroidKeys')
+            storePassword 'android'
+        }
+    }
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "ro.ciubex.tkconfig"
-        minSdkVersion 8
-        targetSdkVersion 23
-        versionCode 26
-        versionName "3.0.1"
+        minSdkVersion 14
+        targetSdkVersion 26
+        versionCode 27
+        versionName "3.0.2"
+        multiDexEnabled true
     }
-
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -36,19 +48,30 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
-        instrumentTest.setRoot('tests')
+        androidTest.setRoot('tests')
 
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
-
     buildTypes {
-        applicationVariants.all { variant ->
-            variant.outputs.each { output ->
-                def apk = output.outputFile;
-                def newName = "TKConfig.apk";
-                output.outputFile = new File(apk.parentFile, newName);
+        release {
+            minifyEnabled true
+            lintOptions {
+                disable 'MissingTranslation'
+                checkReleaseBuilds false
+                abortOnError false
+            }
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "../TKConfig.apk"
+                }
             }
         }
+        debug {
+        }
     }
+}
+
+repositories {
+    google()
 }

@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2016 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ package ro.ciubex.tkconfig.activities;
 
 import ro.ciubex.tkconfig.R;
 import ro.ciubex.tkconfig.TKConfigApplication;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ import android.view.MenuItem;
  * @author Claudiu Ciobotariu
  * 
  */
-public class BaseActivity extends ActionBarActivity {
+public class BaseActivity extends AppCompatActivity {
 	protected TKConfigApplication mApplication;
 	protected int menuId;
 	private boolean showMenu;

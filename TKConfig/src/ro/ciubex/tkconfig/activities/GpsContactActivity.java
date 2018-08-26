@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2018 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,12 +109,14 @@ public class GpsContactActivity extends BaseActivity {
 	 * This method show the pop up menu when the user do a long click on a list
 	 * item.
 	 * 
-	 * @param contactPosition
+	 * @param position
 	 *            The contact position where was made the long click
 	 */
 	private void showItemDialogMenu(final int position) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.item_edit);
+		GpsContact contact = (GpsContact) adapter.getItem(position);
+		String name = contact != null ? contact.getName() : "no contact";
+		builder.setTitle(mApplication.getString(R.string.contact_item, name));
 		builder.setItems(R.array.contacts_menu_list,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
@@ -182,7 +184,7 @@ public class GpsContactActivity extends BaseActivity {
 		final GpsContact contact = (GpsContact) adapter.getItem(position);
 		if (contact != null) {
 			showConfirmationDialog(
-					R.string.remove_history,
+					R.string.remove_contact,
 					mApplication.getString(R.string.remove_gps_contact_question,
 							contact.getName()), CONFIRM_ID_DELETE, contact);
 		}

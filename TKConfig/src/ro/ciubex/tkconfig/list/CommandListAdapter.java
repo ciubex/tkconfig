@@ -1,7 +1,7 @@
 /**
  * This file is part of TKConfig application.
  * 
- * Copyright (C) 2013 Claudiu Ciobotariu
+ * Copyright (C) 2018 Claudiu Ciobotariu
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,8 @@ public class CommandListAdapter extends BaseAdapter {
 	 */
 	@Override
 	public Object getItem(int position) {
-		return commands.get(position);
+		return (position > -1 && position < commands.size()) ?
+				commands.get(position) : null;
 	}
 
 	/**
